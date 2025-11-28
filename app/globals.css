@@ -24,3 +24,9 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+h1 {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-weight-extrabold);
+  line-height: var(--tw-leading);
+}
