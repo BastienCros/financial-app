@@ -1,4 +1,5 @@
 import Overview from "@/components/Overview";
+import Dashboard from "@/src/components/Dashboard";
 
 export default function Home() {
   return (
@@ -6,6 +7,7 @@ export default function Home() {
       <main className="flex min-h-screen w-full max-w-6xl flex-col items-start gap-10 py-8 px-16 bg-white dark:bg-black">
         <h1 className="">Overview</h1>
         <Overview />
+        <Dashboard className='grow'/>
       </main>
     </div>
   );

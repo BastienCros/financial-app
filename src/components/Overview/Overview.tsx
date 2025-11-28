@@ -22,7 +22,7 @@ function Overview() {
   return (
     <div className="w-full">
       <h2><VisuallyHidden>Overview</VisuallyHidden></h2>
-      <ul className="w-full flex flex-col sm:flex-row gap-5">
+      <ul className="flex flex-col sm:flex-row gap-5">
         <CardOverview title="Current Balance" value="4,836.00" variant="dark"/>
         <CardOverview title="Income" value="3,814.25" />
         <CardOverview title="Expenses" value="1,700.50" />

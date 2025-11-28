@@ -1,0 +1,35 @@
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  width: 100%;
+}
+
+.grid > * {
+  border-radius: var(--radius-md);
+}
+
+@media (min-width: 48rem) {
+  .grid {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "pots budget"
+      "transactions budget"
+      "transactions bills";
+  }
+
+  .pots {
+    grid-area: pots;
+  }
+
+  .transactions {
+    grid-area: transactions;
+  }
+
+  .budget {
+    grid-area: budget;
+  }
+
+  .bills {
+    grid-area: bills;
+  }
+}
