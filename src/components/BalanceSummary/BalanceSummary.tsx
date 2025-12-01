@@ -2,12 +2,12 @@ import * as React from "react";
 import VisuallyHidden from "@/components/VisuallyHidden";
 import Card from "@/components/Card";
 
-interface CardOverviewProps extends React.HTMLAttributes<HTMLDivElement> {
+interface BalanceCardProps extends React.HTMLAttributes<HTMLDivElement> {
   title: string,
   value: string,
   variant?: "light" | "dark",
 }
-function CardOverview({ title, value, variant = "light" }: CardOverviewProps) {
+function BalanceCard({ title, value, variant = "light" }: BalanceCardProps) {
   return (
     <li className="grow">
       <Card className="flex flex-col gap-5" variant={variant}>
@@ -18,17 +18,17 @@ function CardOverview({ title, value, variant = "light" }: CardOverviewProps) {
   )
 }
 
-function Overview() {
+function BalanceSummary() {
   return (
     <div className="w-full">
       <h2><VisuallyHidden>Overview</VisuallyHidden></h2>
       <ul className="flex flex-col sm:flex-row gap-5">
-        <CardOverview title="Current Balance" value="4,836.00" variant="dark"/>
-        <CardOverview title="Income" value="3,814.25" />
-        <CardOverview title="Expenses" value="1,700.50" />
+        <BalanceCard title="Current Balance" value="4,836.00" variant="dark"/>
+        <BalanceCard title="Income" value="3,814.25" />
+        <BalanceCard title="Expenses" value="1,700.50" />
       </ul>
     </div>
   );
 }
 
-export default Overview;
+export default BalanceSummary;

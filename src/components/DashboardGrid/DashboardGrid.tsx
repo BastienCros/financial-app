@@ -1,12 +1,12 @@
 import * as React from "react";
 import { cx } from "@/src/lib/utilities";
 
-import styles from "./dashboard.module.css"
+import styles from "./dashboardGrid.module.css"
 
-interface DashboardProps extends React.HTMLAttributes<HTMLDivElement> {
+interface DashboardGridProps extends React.HTMLAttributes<HTMLDivElement> {
   className?: string
 }
-function Dashboard({ className }: DashboardProps) {
+function DashboardGrid({ className }: DashboardGridProps) {
   return (
     <div className={cx(styles.grid, "gap-5", className)}>
       <div className={cx(styles.pots, "bg-[#81c9d7]")}>Pots</div>
@@ -17,4 +17,4 @@ function Dashboard({ className }: DashboardProps) {
   )
 }
 
-export default Dashboard;
+export default DashboardGrid;

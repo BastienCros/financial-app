@@ -12,7 +12,7 @@ function Card({ variant = "light", className, children }: CardProps) {
 
   return (
     <div
-      className={cx("x-5 p-5 rounded-xl", isDark && darkClasses, className)} >
+      className={cx("bg-background px-5 p-5 rounded-xl", isDark && darkClasses, className)} >
       {children}
     </div>
   );

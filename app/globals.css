@@ -3,6 +3,8 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  --alt-background: #F8F5F0;
 }
 
 @theme inline {
@@ -20,13 +22,13 @@
 }
 
 body {
-  background: var(--background);
+  background: var(--alt-background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
 
 h1 {
-  font-size: var(--text-2xl);
+  font-size: var(--text-3xl);
   font-weight: var(--font-weight-extrabold);
   line-height: var(--tw-leading);
 }
