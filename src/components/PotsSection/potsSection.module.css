@@ -1,0 +1,45 @@
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-6);
+}
+
+.summary {
+  /* Update card background color */
+  --card-surface: var(--color-background);
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--spacing-5);
+  padding: var(--spacing-5);
+
+}
+
+.list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: var(--spacing-5);
+  row-gap: var(--spacing-6);
+}
+
+@media (min-width: 40rem) {
+  .content {
+    flex-direction: row;
+  }
+
+  .summary {
+    flex: 2;
+  }
+
+  .list {
+    min-width: calc(var(--spacing) * 60);
+    flex: 3;
+  }
+}
+
+.budgetItem {
+  display: flex;
+  align-items: start;
+  gap: var(--spacing-3);
+}

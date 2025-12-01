@@ -1,34 +1,80 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Brand palette */
+  --green: #277c78;
+  --cyan: #82c9d7;
+  --navy: #626070;
+  --yellow: #f2cdac;
+  --red: #c94736;
 
-  --alt-background: #F8F5F0;
+  /* Surface */
+  --background: #f8f4f0;
+  --surface: #ffffff;
+  --foreground: #201f24;
+
+  --success: #538983;
 }
 
-@theme inline {
+@theme {
+  /* Base color */
+  --color-green: var(--green);
+  --color-cyan: var(--cyan);
+  --color-navy: var(--navy);
+  --color-yellow: var(--yellow);
+  --color-red: var(--red);
+
+  /* Semantic */
   --color-background: var(--background);
+  --color-surface: var(--surface);
   --color-foreground: var(--foreground);
+  --color-success: var(--success);
+
+  /* Surface/foreground */
+  --color-fg: var(--foreground);
+
+  /* Text colors */
+  --color-fg-subtle: #696868;
+  --color-on-dark: #ffffff;
+
+  /* Fonts */
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* Define spacing for use as custom properties */
+  --spacing-2: calc(var(--spacing) * 2);
+  --spacing-3: calc(var(--spacing) * 3);
+  --spacing-5: calc(var(--spacing) * 5);
+  --spacing-6: calc(var(--spacing) * 6);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  body {
+    background: var(--color-background);
+    color: var(--color-foreground);
+    font-family: Arial, Helvetica, sans-serif;
+  }
+
+  h1 {
+    font-size: var(--text-3xl);
+    font-weight: var(--font-weight-extrabold);
+    line-height: var(--tw-leading);
   }
 }
 
-body {
-  background: var(--alt-background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  .tw-card {
+    --card-surface: var(--color-surface);
+    --card-text: var(--color-foreground);
+
+    color: var(--card-text);
+    background-color: var(--card-surface);
+    border-radius: var(--radius-xl);
+    padding: --spacing(6);
+  }
 }
 
-h1 {
-  font-size: var(--text-3xl);
-  font-weight: var(--font-weight-extrabold);
-  line-height: var(--tw-leading);
+/* Not used class for now - keep for reference */
+.flow > * + * {
+  margin-top: var(--flow-space, 1em);
 }

@@ -3,7 +3,7 @@ import DashboardGrid from "@/src/components/DashboardGrid";
 
 export default function Home() {
   return (
-      <main className="flex min-h-screen w-full max-w-6xl flex-col items-start gap-10 py-8 px-10">
+      <main className="flex flex-col items-start w-full min-h-screen gap-10 px-10 py-8 max-w-7xl">
         <h1 className="">Overview</h1>
         <BalanceSummary />
         <DashboardGrid className='grow'/>

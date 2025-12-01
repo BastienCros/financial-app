@@ -1,19 +1,25 @@
 import * as React from "react";
 import { cx } from "@/lib/utilities";
 
-interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
-  children: React.ReactNode;
-  className?: string;
-  variant?: "light" | "dark";
-}
-function Card({ variant = "light", className, children }: CardProps) {
-  const darkClasses = "text-background bg-foreground"
-  const isDark = variant === "dark";
+import styles from "./card.module.css";
 
+/* TODO rename DashboardCard */
+interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+  title: string;
+  children: React.ReactNode;
+}
+function Card({ title, className, children }: CardProps) {
   return (
-    <div
-      className={cx("bg-background px-5 p-5 rounded-xl", isDark && darkClasses, className)} >
-      {children}
+    <div className={cx(styles.card, "tw-card", className)}>
+      <div className={styles.cardHeader}>
+        <h3 className="text-xl font-bold">{title}</h3>
+        <button className={styles.cardAction}>
+          Action Placeholder {">"}
+        </button>
+      </div>
+      <div className={styles.cardContent}>
+        {children}
+      </div>
     </div>
   );
 }
