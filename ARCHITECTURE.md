@@ -1,0 +1,181 @@
+# Architecture Documentation
+
+## Overview
+
+Personal Finance Manager is a Next.js-based financial management application for tracking expenses, budgets, recurring bills, and savings goals. The app uses CSV imports for transaction data and provides monthly budget tracking with category-based organization.
+
+## Tech Stack
+
+- **Framework**: Next.js 16 (App Router)
+- **UI Library**: React 19
+- **Language**: TypeScript 5
+- **Styling**: Tailwind CSS 4
+- **Icons**: Lucide React
+- **Package Manager**: npm
+
+## Data Models
+
+### Transaction
+
+The core data structure for financial transactions.
+
+```typescript
+{
+  id: string | number
+  date: Date | string
+  description: string
+  normalizedDescription?: string  // Optional, used for recurring bill matching
+  categoryId: string | number
+  amount: number
+  typeOperation: 'debit' | 'credit'
+  isRecurringMatch: boolean
+  recurringBillId: string | number | null
+}
+```
+
+**Fields:**
+- `id`: Unique identifier
+- `date`: Transaction date
+- `description`: Original transaction description
+- `normalizedDescription`: Cleaned/normalized description for matching algorithms
+- `categoryId`: Reference to category
+- `amount`: Transaction amount
+- `typeOperation`: Whether it's an expense (debit) or income (credit)
+- `isRecurringMatch`: Whether this transaction matches a recurring bill
+- `recurringBillId`: Reference to matched recurring bill, null if not matched
+
+### RecurringBill
+
+Represents recurring expenses like subscriptions, rent, utilities.
+
+```typescript
+{
+  id: string | number
+  name: string
+  normalizedDescription: string
+  categoryId: string | number
+  typicalAmount: number
+  amountTolerance: number | string  // e.g., 2 (€) or "10%"
+  frequency: 'daily' | 'weekly' | 'monthly' | 'yearly'
+  nextDueDate: Date | string
+  lastPaidDate?: Date | string  // Optional
+}
+```
+
+**Fields:**
+- `id`: Unique identifier
+- `name`: User-friendly name for the bill
+- `normalizedDescription`: Pattern for matching transactions
+- `categoryId`: Reference to category
+- `typicalAmount`: Expected amount
+- `amountTolerance`: Acceptable variance for matching (absolute value or percentage)
+- `frequency`: How often the bill recurs
+- `nextDueDate`: When the bill is next expected
+- `lastPaidDate`: When it was last paid (for tracking)
+
+### Category
+
+Budget categories for organizing expenses and income.
+
+```typescript
+{
+  id: string | number
+  name: string
+  color: string  // Hex color code
+  budget: number  // Monthly budget amount
+}
+```
+
+**Fields:**
+- `id`: Unique identifier
+- `name`: Category name (e.g., "Food", "Transport", "Entertainment")
+- `color`: Visual identifier for UI display
+- `budget`: Monthly budget allocation for this category
+
+## High-Level Sections
+
+### Transactions
+Manages the import, storage, and display of financial transactions.
+- **CSV Import**: Parses and imports transaction data
+- **Filtering**: By date range, category, amount
+- **Display**: List view with pagination/filtering
+- **Status**: ✅ MVP1 Complete
+
+### Budgets
+Category-based budget tracking and visualization.
+- **Category Management**: Create and configure budget categories
+- **Monthly Tracking**: Track spending against budget per category
+- **Visualization**: Charts showing budget utilization
+- **Status**: ✅ MVP1 Complete
+
+### Pots
+Virtual savings goals and fund allocation.
+- **Goal Setting**: Define savings targets
+- **Progress Tracking**: Monitor progress toward goals
+- **Fund Management**: Allocate and withdraw from pots
+- **Status**: ✅ MVP1 Complete (Basic functionality)
+
+### Dashboard
+Central overview of financial status.
+- **Summary Cards**: Balance, income, expenses
+- **Grid Layout**: Responsive dashboard organization
+- **Quick Stats**: Key financial metrics at a glance
+- **Status**: ✅ MVP1 Complete
+
+### Recurring Bills
+Automatic tracking and matching of recurring expenses.
+- **Bill Definition**: Create recurring bill patterns
+- **Transaction Matching**: Auto-link transactions to bills
+- **Payment Dashboard**: Track paid and upcoming bills
+- **Status**: 📋 Planned for MVP2
+
+## Development Setup
+
+### Prerequisites
+- Node.js 20+
+- pnpm
+
+### Quick Start
+
+```bash
+# Install dependencies
+pnpm install
+
+# Run development server
+pnpm run dev
+```
+
+The app will be available at `http://localhost:3000`
+
+### Build Commands
+
+```bash
+# Development
+pnpm run dev
+
+# Production build
+pnpm run build
+
+# Start production server
+pnpm start
+
+# Lint code
+pnpm run lint
+```
+
+## Project Structure
+
+```
+financial-app/
+├── app/                    # Next.js App Router pages
+├── src/
+│   ├── components/         # React components
+│   │   ├── ...
+│   └── lib/               # Utilities and helpers
+├── public/                # Static assets
+└── package.json
+```
+
+## Notes
+
+This architecture documentation focuses on stable data models and high-level structure. Component-level implementation details are intentionally kept minimal as the architecture continues to evolve during active development.

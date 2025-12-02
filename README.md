@@ -1,36 +1,108 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Personal Finance Manager
+
+A modern financial management application for tracking expenses, managing budgets, and achieving savings goals. Built with Next.js 16 and React 19 as part of a Frontend Mentor challenge.
+
+## About the Project
+
+This application helps users take control of their personal finances through intuitive expense tracking, budget management, and savings goal visualization.
+
+**What it does:** Provides a comprehensive dashboard for managing transactions, tracking spending against category-based budgets, and monitoring progress toward savings goals. The app supports CSV imports for easy transaction data entry and offers monthly spending analytics.
+
+**Why it exists:** Built to practice modern React patterns, TypeScript development, and responsive design while creating a practical tool for personal financial management.
+
+**How it works:** Users import transactions via CSV, which are automatically categorized. The dashboard provides real-time insights into spending patterns, budget utilization, and savings progress across customizable categories.
+
+## Key Features
+
+### ✅ Implemented (MVP1)
+
+- **Transaction Management**: CSV import with automatic parsing and categorization
+- **Category-Based Budgets**: Define and track monthly budgets per category
+- **Monthly Overview**: Visualize spending patterns and budget utilization
+- **Dashboard Grid**: Responsive layout with key financial metrics
+- **Pots (Savings Goals)**: Track progress toward savings targets
+- **Balance Summary**: At-a-glance financial overview
+
+### 📋 Planned Features
+
+#### MVP2: Smart Bill Management
+- Manual recurring bill tracking
+- Automatic transaction-to-bill linking
+- Payment status indicators
+- Upcoming bills dashboard
+- Smart matching with tolerance ranges
+
+#### MVP3: Advanced Financial Tools
+- Enhanced pots with savings targets and progress tracking
+- "Available to spend" calculation
+- Income vs expenses analytics
+- Month-over-month trend comparisons
+- Export and reporting capabilities
+- Monthly closing functionality
+
+## Tech Stack
+
+- **Framework**: Next.js 16 (App Router)
+- **UI**: React 19, TypeScript, Tailwind CSS 4
+- **Icons**: Lucide React
+- **Features**: Server Components, CSS Modules
+
+## Current Status
+
+**Development Phase**: MVP1 - Core Features
+
+- ✅ Transaction list with filtering
+- ✅ Category management with budgets
+- ✅ Monthly budget tracking
+- ✅ Basic pots functionality
+- ✅ Responsive dashboard layout
+
+## Roadmap
+
+### Near Term (MVP2)
+1. Recurring bill tracking system
+2. Smart transaction matching for bills
+3. Bill payment status dashboard
+
+### Future (MVP3)
+1. Enhanced savings pots with detailed progress tracking
+2. Comprehensive income vs expenses analytics
+3. Historical trend analysis (month-over-month)
+4. Data export and custom reporting
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Install dependencies
+pnpm install
+
+# Run development server
+pnpm run dev
+
+# Build for production
+pnpm run build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to view the app.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+financial-app/
+├── app/                    # Next.js App Router pages
+├── src/
+│   ├── components/         # React components
+│   │   ├── ...
+│   └── lib/               # Utilities and helpers
+└── public/                # Static assets
+```
 
-## Learn More
+For detailed technical documentation, see [ARCHITECTURE.md](./ARCHITECTURE.md).
 
-To learn more about Next.js, take a look at the following resources:
+## Development Notes
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Built with modern React Server Components
+- Component styling via CSS Modules
+- Full TypeScript type safety
+- Responsive design with Tailwind CSS 4
+- Optimized fonts with `next/font`
