@@ -16,7 +16,7 @@
 .balanceCard {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-5);
+  gap: var(--spacing-4);
 
   & h3 {
     color: var(--color-fg-subtle);

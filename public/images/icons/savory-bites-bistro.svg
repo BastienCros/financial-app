@@ -1,0 +1,10 @@
+<svg width="40" height="40" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="20" cy="20" r="20" fill="#626070"/>
+  <!-- Restaurant/food icon (fork and knife) -->
+  <g fill="white" transform="translate(10, 10)">
+    <!-- Fork -->
+    <path d="M6 2 L6 8 L5.5 8 L5.5 2 M7 2 L7 8 L7.5 8 L7.5 2 M6.75 8 L6.75 18 L5.75 18 L5.75 8" stroke="white" stroke-width="0.5"/>
+    <!-- Knife -->
+    <path d="M14 2 L14 7 C14 8 13.5 8.5 13 8.5 L13 18 L15 18 L15 8.5 C14.5 8.5 14 8 14 7 Z" fill="white"/>
+  </g>
+</svg>

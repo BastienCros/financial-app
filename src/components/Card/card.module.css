@@ -24,6 +24,7 @@
   color: var(--color-fg);
 }
 
+/* Todo we asume here content will flex, wich may not be the case */
 .cardContent {
   display: flex;
   flex-direction: column;

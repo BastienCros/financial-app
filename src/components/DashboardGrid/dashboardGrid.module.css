@@ -5,10 +5,6 @@
   gap: var(--spacing-5);
 }
 
-.grid > * {
-  border-radius: var(--radius-md);
-}
-
 @media (min-width: 64rem) {
   .grid {
     grid-template-columns: 1fr 1fr;

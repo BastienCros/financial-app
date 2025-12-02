@@ -46,10 +46,10 @@ function PotsSection({ className }: PotsSectionsProps) {
     <Card title="Pots" className={className}>
       <div className={styles.content}>
         <div className={cx(styles.summary, "tw-card")}>
-          <CircleDollarSign className="flex-none text-success" size={32} />
+          <CircleDollarSign className="flex-none text-success" size={40} />
           <div className="flex-1">
             <p className="text-fg-subtle">Total Saved</p>
-            <p className="mt-5 font-mono text-3xl font-bold">$850</p>
+            <p className="mt-4 font-mono text-3xl font-bold">$850</p>
           </div>
         </div>
         <div className={styles.list}>

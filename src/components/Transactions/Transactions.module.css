@@ -1,0 +1,31 @@
+.transaction {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: calc(10 * var(--spacing));
+}
+
+.transactionSource {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: calc(4 * var(--spacing));
+}
+
+.transactionSource h3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.transactionAmount {
+  flex: none;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.transactionAmount > * {
+  white-space: nowrap;
+}
