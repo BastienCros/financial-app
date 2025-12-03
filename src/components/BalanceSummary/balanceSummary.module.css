@@ -24,9 +24,6 @@
 }
 
 .balanceCard[data-variant="dark"] {
-  --card-surface: var(--color-foreground);
-  --card-text: var(--color-on-dark);
-
   & h3 {
     color: var(--color-on-dark);
   }

@@ -5,6 +5,7 @@ import styles from "./dashboardGrid.module.css"
 import PotsSection from "@/components/PotsSection";
 import Transactions from "@/components/Transactions";
 import Budgets from "@/components/Budgets";
+import RecurringBills from "@/components/RecurringBills";
 
 interface DashboardGridProps extends React.HTMLAttributes<HTMLDivElement> {
   className?: string
@@ -16,7 +17,7 @@ function DashboardGrid({ className }: DashboardGridProps) {
       <PotsSection className={styles.pots} />
       <Transactions className={styles.transactions} />
       <Budgets className={styles.budget} />
-      <div className={cx(styles.bills, "bg-[#625f70]")}>Recurring Bills</div>
+      <RecurringBills className={styles.bills} />
     </div>
   )
 }

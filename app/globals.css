@@ -73,6 +73,15 @@
     border-radius: var(--radius-xl);
     padding: --spacing(6);
   }
+
+  .tw-card[data-variant="background"] {
+    --card-surface: var(--color-background);
+  }
+
+  .tw-card[data-variant="dark"] {
+    --card-surface: var(--color-foreground);
+    --card-text: var(--color-on-dark);
+  }
 }
 
 /* Not used class for now - keep for reference */

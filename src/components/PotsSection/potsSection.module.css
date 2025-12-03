@@ -5,15 +5,10 @@
 }
 
 .summary {
-  /* Update card background color */
-  --card-surface: var(--color-background);
-
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: var(--spacing-5);
-  padding: var(--spacing-5);
-
 }
 
 .list {

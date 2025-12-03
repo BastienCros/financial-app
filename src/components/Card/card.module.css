@@ -27,6 +27,7 @@
 /* Todo we asume here content will flex, wich may not be the case */
 .cardContent {
   display: flex;
+  justify-content: center;
   flex-direction: column;
   flex-grow: 1;
 }

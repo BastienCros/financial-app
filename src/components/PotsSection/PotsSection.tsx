@@ -23,7 +23,7 @@ function PotsSection({ className }: PotsSectionsProps) {
   return (
     <Card title="Pots" className={className}>
       <div className={styles.content}>
-        <div className={cx(styles.summary, "tw-card")}>
+        <div className={cx(styles.summary, "tw-card")} data-variant="background">
           <CircleDollarSign className="flex-none text-success" size={40} />
           <div className="flex-1">
             <p className="text-fg-subtle">Total Saved</p>
