@@ -179,3 +179,115 @@ financial-app/
 ## Notes
 
 This architecture documentation focuses on stable data models and high-level structure. Component-level implementation details are intentionally kept minimal as the architecture continues to evolve during active development.
+
+
+# Architecture update: data layers
+
+## 1. Data Layers (3-tier structure)
+
+A. Category Configuration (user-defined)
+
+Stable, persistent config that defines:
+	•	id
+	•	name
+	•	color
+	•	budget (monthly limit)
+
+These values do not depend on CSV data or month selection.
+
+type CategoryConfig = {
+  id: string;
+  name: string;
+  color: string;
+  budget: number;
+};
+
+
+⸻
+
+B. Transactions (CSV source of truth)
+
+Imported from CSV, normalized, and stored once.
+
+type Transaction = {
+  id: string;
+  date: Date;
+  amount: number;
+  bankCategory: string;
+  categoryId: string; // mapped to our CategoryConfig
+};
+
+Transactions do not store budget data; they represent real spending events.
+
+⸻
+
+C. Computed Monthly State (derived)
+
+For any given month, we aggregate:
+
+type CategoryMonthState = {
+  categoryId: string;
+  spent: number;      // sum of transactions for that category in that month
+  remaining: number;  // budget - spent
+};
+
+This layer is computed from A + B and never saved directly.
+
+⸻
+
+## 2. UI Data Flow
+
+Pie Chart (Donut)
+
+Displays distribution of spent amounts across categories:
+	•	slices = spent per category
+	•	center big number = totalSpent
+	•	center subtext = of totalBudget limit
+
+This matches intuitive budgeting:
+chart = where money actually went.
+
+⸻
+
+Right-hand List (Budget Breakdown)
+
+Shows category-by-category budget state:
+	•	category name
+	•	spent
+	•	budget
+	•	remaining = budget - spent
+
+Clear, actionable summary:
+
+“How much did I use? How much do I have left?”
+
+⸻
+
+## 3. Component Responsibilities
+
+PieChart
+	•	purely visual (SVG arcs)
+	•	receives PieItem[] (id, label, color, value)
+	•	does not know about money or budgets
+	•	rotation handled internally with <g transform="rotate(...)" />
+
+BudgetCard
+	•	computes:
+	•	categorySpent
+	•	PieItem[]
+	•	totalSpent
+	•	totalBudget
+	•	positions center label absolutely over the pie
+	•	displays category list + values
+
+Future Context/Reducer
+	•	will store:
+	•	categories
+	•	transactions
+	•	active month
+	•	provide selectors:
+	•	getTransactionsForMonth()
+	•	getSpentByCategoryForMonth()
+
+But not needed for the static preview right now.
+

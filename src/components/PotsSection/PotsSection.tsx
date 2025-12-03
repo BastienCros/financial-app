@@ -12,10 +12,10 @@ interface PotsSectionsProps {
 }
 
 const items: Category[] = [
-  { label: "Savings", amount: 159, color: "#277c78" },
-  { label: "Gift", amount: 40, color: "#82c9d7" },
-  { label: "Concert Ticket", amount: 110, color: "#626070" },
-  { label: "New Laptop", amount: 10, color: "#f2cdac" },
+  { label: "Savings", budget: 159, color: "#277c78" },
+  { label: "Gift", budget: 40, color: "#82c9d7" },
+  { label: "Concert Ticket", budget: 110, color: "#626070" },
+  { label: "New Laptop", budget: 10, color: "#f2cdac" },
 ];
 
 

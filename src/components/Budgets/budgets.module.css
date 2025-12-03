@@ -6,9 +6,23 @@
 }
 
 .chartWrapper {
+  position: relative;
   flex: 1;
   max-width: calc(60 * var(--spacing));
   margin-inline: auto;
+}
+
+.summaryWrapper {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+}
+
+.summary {
+  text-align: center;
 }
 
 .listWrapper {

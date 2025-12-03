@@ -3,6 +3,7 @@ import * as React from "react";
 import { lerp } from "@/lib/utilities";
 
 import styles from "./PieChart.module.css";
+import { computeRadialOffsets } from "./PieChart.helpers";
 
 export interface PieItem {
   id: string,
@@ -25,6 +26,7 @@ interface Props {
 }
 
 // Plan is for circle + dash / consider moving to arc path 
+//TODO try 2 circle for compare
 
 /* 
   Corner case:
@@ -43,7 +45,7 @@ function PieChart({
   items = [],
   radius = 28,
   startAngle = 0,
-  strokeWidth = 8,
+  strokeWidth = 10,
   fillOpacity = 1,
 }: Props) {
   const circumference = 2 * Math.PI * radius;
@@ -92,16 +94,69 @@ function PieChart({
         fillOpacity,
       }}
     >
+      <defs>
+        {slices.map((slice) => {
+          // TODO will not be required when true idead are used
+          const sanitizedId = slice.id.trim().replace(/\s+/g, '');
+
+          const k = 0.4; // 60% dark, 40% light
+          const { offsetIn, offsetTransition, R_out } = computeRadialOffsets(radius, strokeWidth, k);
+
+
+          return (
+            <radialGradient
+              key={`gradient-${sanitizedId}`}
+              id={`gradient-${sanitizedId}`}
+              r={R_out}
+              cx={CENTER.x}
+              cy={CENTER.y}
+              gradientUnits="userSpaceOnUse"
+            >
+
+              {/* 
+                offsetIn : inner edge
+                light color
+              */}
+              <stop
+                offset={`${offsetIn * 100}%`}
+                stopColor={slice.color}
+                stopOpacity="0.75"
+              />
+              {/* until transition : light color */}
+              <stop
+                offset={`${offsetTransition * 100}%`}
+                stopColor={slice.color}
+                stopOpacity="0.75"
+              />
+              {/* same offset for hard edge transition */}
+              <stop
+                offset={`${offsetTransition * 100}%`}
+                stopColor={slice.color}
+                stopOpacity="1"
+              />
+              {/* outer edge: dark color */}
+              <stop
+                offset="100%"
+                stopColor={slice.color}
+                stopOpacity="1"
+              />
+            </radialGradient>
+          );
+        })}
+      </defs>
+
       <g transform={`rotate(${startAngle - 90} ${CENTER.x} ${CENTER.y})`}>
         {slices.map((slice) => {
+          // TODO will not be required when true idead are used
+          const sanitizedId = slice.id.trim().replace(/\s+/g, '');
           return (
             <circle
-              key={slice.id}
+              key={sanitizedId}
               cx={CENTER.x}
               cy={CENTER.y}
               r={radius}
               fill="none"
-              stroke={slice.color}
+              stroke={`url(#gradient-${sanitizedId})`}
               strokeDasharray={`${slice.dashSize} ${circumference - slice.dashSize}`}
               strokeDashoffset={slice.dashOffset}
               onMouseEnter={() => console.log("Entering ", slice.label)}

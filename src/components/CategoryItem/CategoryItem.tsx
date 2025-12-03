@@ -18,7 +18,7 @@ function CategoryItem({ category }: CategoryItemProps) {
 
       <div className="flex-1 text-nowrap">
         <p className="text-fg-subtle">{category.label}</p>
-        <p className="mt-2 font-mono font-bold">${category.amount}</p>
+        <p className="mt-2 font-mono font-bold">${category.budget}</p>
       </div>
     </div>
   )

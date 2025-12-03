@@ -1,5 +1,5 @@
 export interface Category {
   label: string;
-  amount: number;
+  budget: number;
   color: string;
 }
