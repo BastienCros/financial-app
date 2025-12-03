@@ -37,9 +37,3 @@
     flex: 3;
   }
 }
-
-.budgetItem {
-  display: flex;
-  align-items: start;
-  gap: var(--spacing-3);
-}

@@ -1,0 +1,44 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-6);
+}
+
+.chartWrapper {
+  flex: 1;
+  max-width: calc(60 * var(--spacing));
+  margin-inline: auto;
+}
+
+.listWrapper {
+  flex: none;
+  margin-inline: auto;
+}
+
+.list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: calc(10 * var(--spacing));
+  row-gap: var(--spacing-6);
+}
+
+@media (min-width: 40rem) {
+  .container {
+    flex-direction: row;
+  }
+
+  .listWrapper {
+    width: calc(52 * var(--spacing));
+  }
+
+  .list {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 64rem) {
+  .chartWrapper {
+    max-width: calc(70 * var(--spacing));
+  }
+}

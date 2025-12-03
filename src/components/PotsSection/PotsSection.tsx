@@ -1,39 +1,17 @@
 import * as React from "react";
 import Card from "@/components/Card";
+import CategoryItem from "@/components/CategoryItem";
 import { cx } from "@/lib/utilities";
 import { CircleDollarSign } from "lucide-react";
+import { Category } from "@/lib/types";
 
 import styles from "./potsSection.module.css";
-
-interface BudgetitemProps {
-  label: string;
-  amount: number;
-  color: string;
-}
-function BudgetItem({ label, amount, color }: BudgetitemProps) {
-
-  return (
-    <div className={styles.budgetItem}>
-
-      {/* vertical color bar */}
-      <span
-        className="flex-none w-1 h-full rounded-full"
-        style={{ backgroundColor: color }}
-      />
-
-      <div className="flex-1 text-nowrap">
-        <p className="text-fg-subtle">{label}</p>
-        <p className="mt-2 font-mono font-bold">${amount}</p>
-      </div>
-    </div>
-  )
-}
 
 interface PotsSectionsProps {
   className?: string;
 }
 
-const items = [
+const items: Category[] = [
   { label: "Savings", amount: 159, color: "#277c78" },
   { label: "Gift", amount: 40, color: "#82c9d7" },
   { label: "Concert Ticket", amount: 110, color: "#626070" },
@@ -54,11 +32,9 @@ function PotsSection({ className }: PotsSectionsProps) {
         </div>
         <div className={styles.list}>
           {items.map((item) => (
-            <BudgetItem
+            <CategoryItem
               key={item.label}
-              label={item.label}
-              amount={item.amount}
-              color={item.color}
+              category={item}
             />
           ))}
         </div>
