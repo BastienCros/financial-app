@@ -5,7 +5,7 @@ export const random = (min: number, max: number) => (
 );
 
 export const sleep = (ms: number) => {
-    return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 /**
@@ -33,3 +33,17 @@ export function generateId({ prefix = '', length = 8, noHyphens = true } = {}) {
   // Add prefix if provided
   return prefix ? `${prefix}-${id}` : id;
 }
+
+/* Linear interpolation */
+export const lerp = (
+  number: number,
+  currentScaleMin: number,
+  currentScaleMax: number,
+  newScaleMin = 0,
+  newScaleMax = 1
+) => {
+  const standardNormalization =
+    (number - currentScaleMin) / (currentScaleMax - currentScaleMin);
+
+  return (newScaleMax - newScaleMin) * standardNormalization + newScaleMin;
+};

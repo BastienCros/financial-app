@@ -1,0 +1,12 @@
+.pieChart {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+
+  circle {
+    stroke-linecap: butt;
+    stroke-linejoin: round;
+    pointer-events: stroke;
+  }
+}
