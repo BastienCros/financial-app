@@ -1,5 +1,5 @@
 import * as React from "react";
-import { cx } from "@/src/lib/utilities";
+import { cx } from "@/utils";
 
 import styles from "./dashboardGrid.module.css"
 import PotsSection from "@/components/PotsSection";

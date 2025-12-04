@@ -1,5 +1,5 @@
 import * as React from "react";
-import { cx } from "@/lib/utilities";
+import { cx } from "@/utils";
 
 import styles from "./card.module.css";
 

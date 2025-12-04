@@ -2,7 +2,7 @@ import * as React from "react";
 import Card from "@/components/Card";
 import PieChart, { PieItem } from "@/components/PieChart";
 import CategoryItem from "@/components/CategoryItem";
-import { Category } from "@/lib/types";
+import { Category } from "@/types";
 
 import styles from "./budgets.module.css";
 import { getCategoryColor } from "./Budget.helpers";

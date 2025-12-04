@@ -165,15 +165,74 @@ pnpm run lint
 
 ## Project Structure
 
+This project follows a function-based organization approach (inspired by [Josh Comeau's file structure philosophy](https://www.joshwcomeau.com/react/file-structure/)), grouping code by type rather than by feature.
+
 ```
 financial-app/
-├── app/                    # Next.js App Router pages
+├── app/                    # Next.js App Router pages and layouts
 ├── src/
-│   ├── components/         # React components
-│   │   ├── ...
-│   └── lib/               # Utilities and helpers
-├── public/                # Static assets
+│   ├── components/         # React UI components
+│   │   └── ComponentName/
+│   │       ├── ComponentName.tsx
+│   │       ├── ComponentName.module.css  # (optional)
+│   │       ├── ComponentName.types.ts    # (component-specific)
+│   │       ├── ComponentName.helpers.ts  # (component-specific)
+│   │       └── index.ts                  # barrel export
+│   │
+│   ├── contexts/           # React Context providers & hooks
+│   │   └── index.ts        # barrel export
+│   │
+│   ├── hooks/              # Reusable custom React hooks
+│   │   └── index.ts        # barrel export
+│   │
+│   ├── helpers/            # Project-specific utility functions
+│   │   └── index.ts        # barrel export
+│   │
+│   ├── utils/              # Generic, reusable utility functions
+│   │   └── index.ts        # barrel export
+│   │
+│   ├── types/              # Shared TypeScript type definitions
+│   │   └── index.ts        # type re-exports
+│   │
+│   └── data/               # Mock/seed data for development
+│       └── index.ts        # barrel export
+│
+├── public/                 # Static assets (images, icons)
 └── package.json
+```
+
+### Helpers vs Utils: Understanding the Difference
+
+Following Josh Comeau's distinction:
+
+**helpers/** - Project-specific utility functions
+- Functions that contain business logic specific to this application
+- Examples: `formatCurrency()`, `calculateBudgetRemaining()`, `matchRecurringBill()`
+- These helpers understand the domain and requirements of your financial app
+- Not portable to other projects without modification
+
+**utils/** - Generic, reusable utility functions
+- Pure functions that could work in any project
+- Examples: `cn()` (className utility), `clamp()`, `debounce()`, `formatDate()`
+- No knowledge of your app's business domain
+- Can be copy-pasted to other projects without changes
+
+### Component Organization
+
+Components keep their specific files co-located:
+- `ComponentName.types.ts` - Types only used by this component
+- `ComponentName.helpers.ts` - Functions only used by this component
+- Component-specific files are promoted to global directories only when shared by multiple components
+
+### Barrel Exports
+
+Index files (`index.ts`) provide clean imports:
+```typescript
+// Instead of:
+import { useLocalStorage } from '@/hooks/use-local-storage'
+
+// Use:
+import { useLocalStorage } from '@/hooks'
 ```
 
 ## Notes
@@ -291,3 +350,18 @@ Future Context/Reducer
 
 But not needed for the static preview right now.
 
+
+## Add pages for transaction: layout idea
+
+```
+  Create a shared layout for just the pages that need transactions:
+  app/
+    ├── layout.tsx (root)
+    ├── (dashboard)/
+    │   ├── layout.tsx ← TransactionsProvider here
+    │   ├── page.tsx (home)
+    │   └── transactions/
+    │       └── page.tsx
+    └── settings/ (doesn't need transactions)
+        └── page.tsx
+```

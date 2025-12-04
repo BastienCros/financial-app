@@ -1,6 +1,5 @@
 'use client'
-import * as React from "react";
-import { lerp } from "@/lib/utilities";
+import { lerp } from "@/utils";
 
 import styles from "./PieChart.module.css";
 import { computeRadialOffsets } from "./PieChart.helpers";

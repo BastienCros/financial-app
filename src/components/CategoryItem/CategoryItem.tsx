@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Category } from "@/lib/types";
+import { Category } from "@/types";
 
 interface CategoryItemProps {
   category: Category;

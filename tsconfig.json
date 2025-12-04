@@ -21,7 +21,19 @@
     "paths": {
       "@/*": ["./*"],
       "@/components/*": ["./src/components/*"],
-      "@/lib/*": ["./src/lib/*"]
+      "@/contexts": ["./src/contexts"],
+      "@/contexts/*": ["./src/contexts/*"],
+      "@/hooks": ["./src/hooks"],
+      "@/hooks/*": ["./src/hooks/*"],
+      "@/helpers": ["./src/helpers"],
+      "@/helpers/*": ["./src/helpers/*"],
+      "@/utils": ["./src/utils"],
+      "@/utils/*": ["./src/utils/*"],
+      "@/types": ["./src/types"],
+      "@/types/*": ["./src/types/*"],
+      "@/data": ["./src/data"],
+      "@/data/*": ["./src/data/*"],
+      "@/public/*": ["./public/*"]
     }
   },
   "include": [
