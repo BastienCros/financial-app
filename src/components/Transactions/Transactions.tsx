@@ -1,6 +1,6 @@
 'use client'
 import Image from 'next/image'
-import Card from "@/components/Card";
+import Card, { CardAction } from "@/components/Card";
 import { Transaction } from "@/types";
 import { useTransactions } from "@/src/contexts";
 
@@ -41,15 +41,17 @@ function TransactionItem({ transaction, className }: TransactionItemProps) {
 
 interface TransactionsProps {
   className?: string;
+  count?: number;
+  action?: CardAction;
 }
 
-function Transactions({ className }: TransactionsProps) {
+function Transactions({ className, count, action }: TransactionsProps) {
 
   const { transactions } = useTransactions();
-  const lastTransactions = getRecentTransactions(transactions, 5);
+  const lastTransactions = getRecentTransactions(transactions, count || Infinity);
 
   return (
-    <Card title="Transactions" className={className}>
+    <Card title="Transactions" className={className} action={action}>
       <ul className="flex flex-col divide-y divide-background">
         {lastTransactions.map((t) => {
           return <TransactionItem key={t.id} transaction={t} className="py-4"></TransactionItem>;
