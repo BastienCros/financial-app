@@ -2,7 +2,7 @@
 import { lerp } from "@/utils";
 
 import styles from "./PieChart.module.css";
-import { computeRadialOffsets } from "./PieChart.helpers";
+import { computeRadialOffsets, sanitizeId } from "./PieChart.helpers";
 
 export interface PieItem {
   id: string,
@@ -96,7 +96,7 @@ function PieChart({
       <defs>
         {slices.map((slice) => {
           // TODO will not be required when true idead are used
-          const sanitizedId = slice.id.trim().replace(/\s+/g, '');
+          const sanitizedId = sanitizeId(slice.id);
 
           const k = 0.4; // 60% dark, 40% light
           const { offsetIn, offsetTransition, R_out } = computeRadialOffsets(radius, strokeWidth, k);
@@ -147,7 +147,7 @@ function PieChart({
       <g transform={`rotate(${startAngle - 90} ${CENTER.x} ${CENTER.y})`}>
         {slices.map((slice) => {
           // TODO will not be required when true idead are used
-          const sanitizedId = slice.id.trim().replace(/\s+/g, '');
+          const sanitizedId = sanitizeId(slice.id);
           return (
             <circle
               key={sanitizedId}

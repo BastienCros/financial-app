@@ -365,3 +365,36 @@ But not needed for the static preview right now.
     └── settings/ (doesn't need transactions)
         └── page.tsx
 ```
+
+## Error Boundaries
+
+**Why**: Prevent component errors from crashing entire app. Provide graceful degradation and error isolation.
+
+**When to implement**: MVP2 (Medium priority)
+
+**Strategy**:
+- Use Next.js `error.tsx` convention at page level: `app/(dashboard)/error.tsx`
+- Wrap critical components (PieChart, data computations) in custom ErrorBoundary component
+- Real-world cases: network failures, invalid data parsing, malformed CSV, chart rendering errors
+
+**Implementation**: Create reusable `ErrorBoundary` component + add `error.tsx` files at key routes
+
+---
+
+## Loading States
+
+**Why**: Essential for API integration (MVP2). Prevents blank screens, layout shifts, and poor UX during data fetching.
+
+**When to implement**: MVP2 when transitioning from mock data to API calls (High priority)
+
+**Strategy**:
+- Use Next.js `loading.tsx` convention for page-level loading
+- Use React `<Suspense>` for component-level granular loading
+- Create skeleton components matching real content layout (TransactionsSkeleton, BudgetsSkeleton, etc.)
+
+**Patterns**:
+- Parallel loading for independent sections
+- Progressive enhancement (basic info first, details after)
+- Skeleton UI with pulse animation for visual feedback
+
+---

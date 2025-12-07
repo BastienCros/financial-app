@@ -1,7 +1,5 @@
 import * as React from "react";
 import Card from "@/components/Card";
-import { Car } from "lucide-react";
-
 
 interface Props {
   className?: string;

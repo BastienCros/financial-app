@@ -2,15 +2,13 @@
 import Image from 'next/image'
 import Card, { CardAction } from "@/components/Card";
 import { Transaction } from "@/types";
-import { useTransactions } from "@/src/contexts";
-
-import DefaultCategoryImage from '@/public/images/icons/default-category.svg'
+import { useTransactions } from "@/contexts";
+import { cx } from "@/utils";
+import { formatCurrency, getRecentTransactions } from '@/helpers';
+import { formatTransactionDate } from "./Transactions.helpers";
 
 import styles from "./Transactions.module.css";
-
-import { formatTransactionDate } from "./Transactions.helpers";
-import { cx } from "@/utils";
-import { formatCurrency, getRecentTransactions } from '@/src/helpers';
+import DefaultCategoryImage from '@/public/images/icons/default-category.svg';
 
 interface TransactionItemProps {
   transaction: Transaction,

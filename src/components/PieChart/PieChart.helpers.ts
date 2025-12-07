@@ -22,3 +22,7 @@ export function computeRadialOffsets(radius: number, strokeWidth: number, k: num
 
     return { R_out, offsetIn, offsetTransition, offsetOut };
 }
+
+export function sanitizeId(id: string) {
+  return id.trim().replace(/\s+/g, '');
+}

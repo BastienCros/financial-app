@@ -1,5 +1,5 @@
 'use client'
-import * as React from "react";
+import { useMemo } from "react";
 import VisuallyHidden from "@/components/VisuallyHidden";
 import { cx } from "@/utils";
 import { useTransactions } from "@/src/contexts";
@@ -27,17 +27,19 @@ function BalanceCard({ title, amount, variant = "light" }: BalanceCardProps) {
 function BalanceSummary() {
   const { transactions } = useTransactions();
 
-  const currentBalance = getBalance(transactions);
-  const totalIncomes = getTotalIncome(transactions);
-  const totalExpenses = getTotalExpenses(transactions);
+  const summary = useMemo(() => ({
+    balance: getBalance(transactions),
+    income: getTotalIncome(transactions),
+    expenses: getTotalExpenses(transactions)
+  }), [transactions]);
 
   return (
     <div className="w-full">
       <h2><VisuallyHidden>Overview</VisuallyHidden></h2>
       <ul className={styles.balanceList}>
-        <BalanceCard title="Current Balance" amount={currentBalance} variant="dark" />
-        <BalanceCard title="Income" amount={totalIncomes} />
-        <BalanceCard title="Expenses" amount={totalExpenses} />
+        <BalanceCard title="Current Balance" amount={summary.balance} variant="dark" />
+        <BalanceCard title="Income" amount={summary.income} />
+        <BalanceCard title="Expenses" amount={summary.expenses} />
       </ul>
     </div>
   );
