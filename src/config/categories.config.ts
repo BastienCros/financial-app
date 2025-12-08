@@ -38,7 +38,7 @@ export const categories: Category[] = [
     },
     {
         id: "shopping",
-        label: "Shopping & Services",
+        label: "Shopping",
         budget: 0,
         color: "#E8A6A1",
         iconUrl: "/images/categories/shopping.svg", // https://lucide.dev/icons/shopping-bag

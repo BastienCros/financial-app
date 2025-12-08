@@ -55,7 +55,7 @@ export const mockTransactions: Transaction[] = [
     date: "2025-10-24",
     description: "Rent - City Apartments",
     categoryId: "housing",
-    amount: -950,
+    amount: -150,
   },
   {
     id: "t-009",

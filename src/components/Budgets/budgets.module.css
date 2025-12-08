@@ -8,6 +8,7 @@
 .chartWrapper {
   position: relative;
   flex: 1;
+  /* min-width: calc(47 * var(--spacing)); */
   max-width: calc(60 * var(--spacing));
   margin-inline: auto;
 }
@@ -33,7 +34,7 @@
 .list {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  column-gap: calc(10 * var(--spacing));
+  column-gap: calc(8 * var(--spacing));
   row-gap: var(--spacing-6);
 }
 
@@ -43,11 +44,7 @@
   }
 
   .listWrapper {
-    width: calc(52 * var(--spacing));
-  }
-
-  .list {
-    grid-template-columns: 1fr;
+    width: calc(64 * var(--spacing));
   }
 }
 

@@ -2,7 +2,6 @@ import * as React from "react";
 import Card from "@/components/Card";
 import CategoryItem from "@/components/CategoryItem";
 import { CircleDollarSign } from "lucide-react";
-import { Category } from "@/types";
 import { cx } from "@/utils";
 
 import styles from "./potsSection.module.css";
