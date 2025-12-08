@@ -4,3 +4,4 @@
 // export * from './date.helpers';
 
 export * from './transactions.helpers';
+export * from './categories.helpers';

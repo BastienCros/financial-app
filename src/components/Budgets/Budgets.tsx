@@ -1,29 +1,17 @@
-import * as React from "react";
+'use client'
+import { useMemo } from "react";
+import { categories } from "@/src/config";
+import { calculateCategoryTotal, getCategoryColor } from "@/helpers";
+import { useTransactions } from "@/contexts/TransactionsContext";
 import Card from "@/components/Card";
 import PieChart, { PieItem } from "@/components/PieChart";
 import CategoryItem from "@/components/CategoryItem";
-import { Category } from "@/types";
 
 import styles from "./budgets.module.css";
-import { getCategoryColor } from "./Budget.helpers";
 
-const categories: Category[] = [
-  { label: "Entertainment", budget: 50, color: "#267D77" },
-  { label: "Bills", budget: 750, color: "#81C9D8" },
-  { label: "Dining Out", budget: 75, color: "#F2CDAC" },
-  { label: "Personal Care", budget: 100, color: "#625F71" },
-];
-const totalBudget = categories.reduce((acc, item) => acc + item.budget, 0);
-
-const categorySpend: { categoryId: string; spent: number }[] = [
-  { categoryId: "Bills", spent: 200 },
-  { categoryId: "Dining Out", spent: 60 },
-  { categoryId: "Personal Care", spent: 40 },
-  { categoryId: "Entertainment", spent: 38 },
-];
-const totalSpent = categorySpend.reduce((acc, item) => acc + item.spent, 0);
-
-const pieItems = categorySpend.map((item) => ({ id: item.categoryId, label: item.categoryId, value: item.spent, color: getCategoryColor(item.categoryId, categories) } as PieItem));
+// Static computations - only depend on categories config
+const budgetCategories = categories.filter(c => c.id !== 'income');
+const totalBudget = budgetCategories.reduce((acc, item) => acc + item.budget, 0);
 
 interface SummaryProps {
   total: number,
@@ -46,6 +34,26 @@ interface BudgetsProps {
 }
 
 function Budgets({ className }: BudgetsProps) {
+  const { transactions } = useTransactions();
+
+  const categorySpend = useMemo(() => {
+    return budgetCategories.map(c => ({
+      ...c,
+      spend: calculateCategoryTotal(c.id, transactions)
+    })).filter(c => c.spend !== 0);
+  }, [transactions]);
+
+  const totalSpent = useMemo(() => categorySpend.reduce((acc, item) => acc + item.spend, 0), [categorySpend]);
+
+  const pieItems = useMemo(() => {
+    return categorySpend.map((item) => ({
+      id: item.id,
+      label: item.label,
+      value: item.spend,
+      color: getCategoryColor(item.id)
+    } as PieItem))
+  }, [categorySpend]);
+
   return (
     <Card title="Budgets" className={className}>
       <div className={styles.container}>
@@ -54,9 +62,16 @@ function Budgets({ className }: BudgetsProps) {
           <Summary total={totalSpent} limit={totalBudget} />
         </div>
         <div className={styles.listWrapper}>
+          {/* TODO Budget categories make list dont take too much height */}
           <ul className={styles.list}>
-            {categories.map((item) => (
-              <CategoryItem key={item.label} category={item} />
+            {categorySpend.map((item) => (
+              <CategoryItem
+                key={item.id}
+                label={item.label}
+                budget={item.budget}
+                spend={item.spend}
+                color={item.color}
+              />
             ))}
           </ul>
         </div>

@@ -4,11 +4,12 @@ import Card, { CardAction } from "@/components/Card";
 import { Transaction } from "@/types";
 import { useTransactions } from "@/contexts";
 import { cx } from "@/utils";
-import { formatCurrency, getRecentTransactions } from '@/helpers';
+import { formatCurrency, getRecentTransactions, getCategoryIconUrl, getCategoryLabel } from '@/helpers';
 import { formatTransactionDate } from "./Transactions.helpers";
 
+
 import styles from "./Transactions.module.css";
-import DefaultCategoryImage from '@/public/images/icons/default-category.svg';
+import DefaultCategoryImage from '@/public/images/categories/other.svg';
 
 interface TransactionItemProps {
   transaction: Transaction,
@@ -17,12 +18,15 @@ interface TransactionItemProps {
 
 
 function TransactionItem({ transaction, className }: TransactionItemProps) {
-  const isAmountPositive = transaction.amount > 0
+  const isAmountPositive = transaction.amount > 0;
+  const iconUrl = getCategoryIconUrl(transaction.categoryId) || DefaultCategoryImage;
+  const label = getCategoryLabel(transaction.categoryId);
+  const categoryLabel = label ? `${label} category` : "Other category";
 
   return (
     <li key={transaction.id} className={cx(styles.transaction, className)}>
       <div className={styles.transactionSource}>
-        <Image src={DefaultCategoryImage} alt="" width={40} height={40} />
+        <Image src={iconUrl} alt={categoryLabel} width={40} height={40} />
         <h3 className="text-sm font-bold">{transaction.description}</h3>
       </div>
       <div className={styles.transactionAmount}>
@@ -49,7 +53,7 @@ function Transactions({ className, count, action }: TransactionsProps) {
   const lastTransactions = getRecentTransactions(transactions, count || Infinity);
 
   return (
-    <Card title="Transactions" className={className} action={action}>
+    <Card title="Transactions" headingLevel='h2' className={className} action={action}>
       <ul className="flex flex-col divide-y divide-background">
         {lastTransactions.map((t) => {
           return <TransactionItem key={t.id} transaction={t} className="py-4"></TransactionItem>;

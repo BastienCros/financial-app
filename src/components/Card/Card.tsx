@@ -29,14 +29,19 @@ function renderAction(action: CardAction) {
 /* TODO rename DashboardCard */
 interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   title: string;
+  headingLevel?: "h1" | "h2" | "h3";
   action?: CardAction
   children: React.ReactNode;
-}
-function Card({ title, action, className, children }: CardProps) {
+};
+
+function Card({ title, headingLevel = "h3", action, className, children }: CardProps) {
+
+  const HeadingTag = headingLevel;
+
   return (
     <div className={cx(styles.card, "tw-card", className)}>
       <div className={styles.cardHeader}>
-        <h3 className="text-xl font-bold">{title}</h3>
+        <HeadingTag className="text-xl font-bold">{title}</HeadingTag>
         {action && renderAction(action)}
       </div>
       <div className={styles.cardContent}>

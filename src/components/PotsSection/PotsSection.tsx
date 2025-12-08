@@ -11,11 +11,11 @@ interface PotsSectionsProps {
   className?: string;
 }
 
-const items: Category[] = [
-  { label: "Savings", budget: 159, color: "#277c78" },
-  { label: "Gift", budget: 40, color: "#82c9d7" },
-  { label: "Concert Ticket", budget: 110, color: "#626070" },
-  { label: "New Laptop", budget: 10, color: "#f2cdac" },
+const items = [
+  { id: "1", label: "Savings", budget: 159, color: "#277c78", iconUrl: "" },
+  { id: "2", label: "Gift", budget: 40, color: "#82c9d7", iconUrl: "" },
+  { id: "3", label: "Concert Ticket", budget: 110, color: "#626070", iconUrl: "" },
+  { id: "4", label: "New Laptop", budget: 10, color: "#f2cdac", iconUrl: "" },
 ];
 
 
@@ -33,8 +33,10 @@ function PotsSection({ className }: PotsSectionsProps) {
         <div className={styles.list}>
           {items.map((item) => (
             <CategoryItem
-              key={item.label}
-              category={item}
+              key={item.id}
+              label={item.label}
+              budget={item.budget}
+              color={item.color}
             />
           ))}
         </div>
