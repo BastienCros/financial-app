@@ -1,4 +1,5 @@
 import { Transaction } from "@/types";
+import { formatMonthValue } from "./date.helpers";
 
 /* Sorting helpers */
 export const getTransactionsSortedByDate = (transactions: Transaction[]) => {
@@ -32,4 +33,27 @@ export const getBalance = (transactions: Transaction[]) => {
 /* Format helpers */
 export const formatCurrency = (amount: number): string => {
     return `${amount < 0 ? '-' : ''}$${Math.abs(amount).toFixed(2)}`;
+}
+
+
+/* Month helpers */
+export const getAvailableMonth = (transactions: Transaction[]) => {
+    // Use Set for O(n) performance - automatically handles uniqueness
+    const monthSet = new Set(
+        transactions.map(t => formatMonthValue(new Date(t.date)))
+    );
+
+    // Convert to array and sort (newest first)
+    return Array.from(monthSet).sort((a, b) => a.localeCompare(b));
+}
+
+export const getMonthTransactions = (transactions: Transaction[], month: Date): Transaction[] => {
+    const selectedYear = month.getFullYear();
+    const selectedMonth = month.getMonth();
+
+    return transactions.filter(t => {
+        const tDate = new Date(t.date);
+        return tDate.getFullYear() === selectedYear &&
+            tDate.getMonth() === selectedMonth;
+    })
 }

@@ -8,7 +8,8 @@ import RecurringBills from "@/components/RecurringBills";
 import { CardAction } from "@/components/Card";
 
 interface DashboardGridProps extends React.HTMLAttributes<HTMLDivElement> {
-  className?: string
+  selectedMonth: Date;
+  className?: string;
 }
 
 const transactionCardAction: CardAction = {
@@ -17,7 +18,7 @@ const transactionCardAction: CardAction = {
   label: "See all",
 }
 
-function DashboardGrid({ className }: DashboardGridProps) {
+function DashboardGrid({ className, selectedMonth }: DashboardGridProps) {
   return (
     <div className={cx(styles.grid, className)}>
       {/* <div className={cx(styles.pots, "bg-[#81c9d7]")}>Pots</div> */}
@@ -26,7 +27,7 @@ function DashboardGrid({ className }: DashboardGridProps) {
         className={styles.transactions}
         count={5}
         action={transactionCardAction} />
-      <Budgets className={styles.budget} />
+      <Budgets className={styles.budget} selectedMonth={selectedMonth} />
       <RecurringBills className={styles.bills} />
     </div>
   )

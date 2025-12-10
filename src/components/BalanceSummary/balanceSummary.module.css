@@ -1,6 +1,6 @@
 .balanceList {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr;
   gap: var(--spacing-5);
   list-style: none;
   padding: 0;
@@ -9,7 +9,7 @@
 
 @media (min-width: 40rem) {
   .balanceList {
-    flex-direction: row;
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 

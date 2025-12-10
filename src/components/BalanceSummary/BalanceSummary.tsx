@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import VisuallyHidden from "@/components/VisuallyHidden";
 import { cx } from "@/utils";
 import { useTransactions } from "@/src/contexts";
-import { getTotalIncome, getBalance, getTotalExpenses, formatCurrency } from '@/src/helpers';
+import { getTotalIncome, getBalance, getTotalExpenses, formatCurrency, getMonthTransactions } from '@/src/helpers';
 
 import styles from "./balanceSummary.module.css";
 
@@ -24,14 +24,26 @@ function BalanceCard({ title, amount, variant = "light" }: BalanceCardProps) {
   )
 }
 
-function BalanceSummary() {
+interface BalanceSummaryProps {
+  month: Date;
+}
+
+function BalanceSummary({ month }: BalanceSummaryProps) {
   const { transactions } = useTransactions();
+  
+  // Two memos here are not for performance (can work with one) but for readability
+  const currentMonthTransactions = useMemo(
+    () => getMonthTransactions(transactions, month),
+    [transactions, month]
+  );
 
   const summary = useMemo(() => ({
-    balance: getBalance(transactions),
-    income: getTotalIncome(transactions),
-    expenses: getTotalExpenses(transactions)
-  }), [transactions]);
+    balance: getBalance(currentMonthTransactions),
+    income: getTotalIncome(currentMonthTransactions),
+    expenses: getTotalExpenses(currentMonthTransactions)
+  }), [currentMonthTransactions]);
+
+  // TODO: Add empty state when currentMonthTransactions.length === 0 (no data for selected month)
 
   return (
     <div className="w-full">

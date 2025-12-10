@@ -113,4 +113,11 @@ export const mockTransactions: Transaction[] = [
     categoryId: "fees",
     amount: -150,
   },
+  {
+    id: "t-016",
+    date: "2025-12-16",
+    description: "Legal Consultation Fee",
+    categoryId: "fees",
+    amount: -150,
+  },
 ];

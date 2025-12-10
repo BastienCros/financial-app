@@ -52,6 +52,9 @@ function Transactions({ className, count, action }: TransactionsProps) {
   const { transactions } = useTransactions();
   const lastTransactions = getRecentTransactions(transactions, count || Infinity);
 
+  // TODO: Add empty state when lastTransactions.length === 0 (no transactions imported yet)
+  // Note: Currently shows recent transactions from ALL time, not filtered by selected month
+
   return (
     <Card title="Transactions" headingLevel='h2' className={className} action={action}>
       <ul className="flex flex-col divide-y divide-background">
