@@ -4,14 +4,14 @@ export const categories: Category[] = [
     {
         id: "transport",
         label: "Transport",
-        budget: 40,
+        budget: 200,
         color: "#9DC4BA",
         iconUrl: "/images/categories/transport.svg", // https://lucide.dev/icons/rocket
     },
     {
         id: "entertainment",
         label: "Entertainment",
-        budget: 20,
+        budget: 50,
         color: "#267D77",
         iconUrl: "/images/categories/entertainment.svg", // https://lucide.dev/icons/drama
     },
@@ -25,7 +25,7 @@ export const categories: Category[] = [
     {
         id: "housing",
         label: "Housing",
-        budget: 120,
+        budget: 300,
         color: "#81C9D8",
         iconUrl: "/images/categories/housing.svg", // https://lucide.dev/icons/house
     },
@@ -39,7 +39,7 @@ export const categories: Category[] = [
     {
         id: "shopping",
         label: "Shopping",
-        budget: 0,
+        budget: 150,
         color: "#E8A6A1",
         iconUrl: "/images/categories/shopping.svg", // https://lucide.dev/icons/shopping-bag
     },
@@ -53,7 +53,7 @@ export const categories: Category[] = [
     {
         id: "other",
         label: "Other",
-        budget: 0,
+        budget: 300,
         color: "#D1C1E1",
         iconUrl: "/images/categories/other.svg", // https://lucide.dev/icons/piggy-bank
     },

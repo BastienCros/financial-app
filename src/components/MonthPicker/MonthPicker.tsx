@@ -5,7 +5,7 @@ import { getAvailableMonth, formatMonthLabel, formatMonthValue, parseMonthValue 
 // TODO MonthPicker possible improvement
 // << Current date >> => wrap with prev/next (if they exist) button
 // 'Jump to xx month'
-// Better UI
+// Implement better UI
 
 interface Props {
   currentMonth: Date;

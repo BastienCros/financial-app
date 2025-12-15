@@ -25,8 +25,6 @@ function renderAction(action: CardAction) {
     );
   }
 }
-
-/* TODO rename DashboardCard */
 interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   title: string;
   headingLevel?: "h1" | "h2" | "h3";

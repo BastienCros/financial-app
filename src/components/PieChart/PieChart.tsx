@@ -24,14 +24,14 @@ interface Props {
   fillOpacity?: number,
 }
 
-// Plan is for circle + dash / consider moving to arc path 
-//TODO try 2 circle for compare
-
 /* 
-  Corner case:
+  TODO Handle PieChart corner case:
     - total of O : render a no data component
     - clamp very small percentages if you don’t want visually invisible slivers
     - manage floating point rounding so the last segment closes nicely
+  TODO Pie Chart - SVG render issue on some browsers:
+    - Using Gradient + stroke-dasharray seems bugged on some browsers (observed with Chromium-based browsers on mobile)
+    - Instead use elliptical arcs
  */
 
 const VIEWBOX_SIZE = 64;
@@ -42,9 +42,9 @@ const CENTER = {
 
 function PieChart({
   items = [],
-  radius = 28,
+  radius = 24,
   startAngle = 0,
-  strokeWidth = 10,
+  strokeWidth = 8,
   fillOpacity = 1,
 }: Props) {
   const circumference = 2 * Math.PI * radius;
@@ -52,7 +52,6 @@ function PieChart({
     (accumulator, item) => accumulator + item.value,
     0
   );
-
 
   const slices = items.reduce<{
     currentOffset: number;
@@ -95,7 +94,7 @@ function PieChart({
     >
       <defs>
         {slices.map((slice) => {
-          // TODO will not be required when true idead are used
+          // TODO Remove when using real data instead of mock data
           const sanitizedId = sanitizeId(slice.id);
 
           const k = 0.4; // 60% dark, 40% light
@@ -146,7 +145,7 @@ function PieChart({
 
       <g transform={`rotate(${startAngle - 90} ${CENTER.x} ${CENTER.y})`}>
         {slices.map((slice) => {
-          // TODO will not be required when true idead are used
+          // TODO Remove when using real data instead of mock data
           const sanitizedId = sanitizeId(slice.id);
           return (
             <circle
@@ -157,8 +156,7 @@ function PieChart({
               fill="none"
               stroke={`url(#gradient-${sanitizedId})`}
               strokeDasharray={`${slice.dashSize} ${circumference - slice.dashSize}`}
-              strokeDashoffset={slice.dashOffset}
-              onMouseEnter={() => console.log("Entering ", slice.label)}
+              strokeDashoffset={`${slice.dashOffset}`}
             />
           );
         })}
