@@ -92,5 +92,3 @@ financial-app/
 │   └── data/               # Mock/seed data for development
 └── public/                # Static assets
 ```
-
-For detailed technical documentation, see [ARCHITECTURE.md](./ARCHITECTURE.md).
