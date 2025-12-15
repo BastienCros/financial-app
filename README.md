@@ -35,9 +35,9 @@ This project started from a Frontend Mentor design challenge and is extending in
 
 #### Active Development (dev branch)
 
-🚧 Implementing SQLite WASM for local-first data persistence
-🚧 CSV Import with automatic parsing and categorization
-🚧 Full CRUD operations
+🚧 Implementing SQLite WASM for local-first data persistence</br>
+🚧 CSV Import with automatic parsing and categorization</br>
+🚧 Full CRUD operations</br>
 
 #### Planned Features
 - Pots (savings goals) management
