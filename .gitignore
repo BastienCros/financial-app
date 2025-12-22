@@ -19,6 +19,7 @@
 
 # production
 /build
+/public/sqlite
 
 # misc
 .DS_Store

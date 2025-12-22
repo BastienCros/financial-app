@@ -1,8 +1,8 @@
 import path from 'node:path';
 import fs from 'node:fs';
 
-const wasmRelativePath = 'node_modules/@sqlite.org/sqlite-wasm/sqlite-wasm/jswasm/sqlite3.wasm';
-const wasmBuffer = fs.readFileSync(path.resolve(process.cwd(), wasmRelativePath)); // path from root
+const wasmPath = path.join(process.cwd(), 'public', 'sqlite', 'sqlite3.wasm');
+const wasmBuffer = fs.readFileSync(wasmPath);
 
 export async function GET() {
 
