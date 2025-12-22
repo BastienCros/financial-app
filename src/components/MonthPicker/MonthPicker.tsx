@@ -1,11 +1,12 @@
-import { useMemo } from "react";
-import { useTransactions } from "@/contexts";
-import { getAvailableMonth, formatMonthLabel, formatMonthValue, parseMonthValue } from "@/helpers";
+import { formatMonthLabel, formatMonthValue, parseMonthValue } from "@/helpers";
+import { useAvailableMonths } from "@/hooks/transactions.hooks";
 
 // TODO MonthPicker possible improvement
 // << Current date >> => wrap with prev/next (if they exist) button
 // 'Jump to xx month'
 // Implement better UI
+
+const WINDOW_SIZE = 5;
 
 interface Props {
   currentMonth: Date | null;
@@ -26,12 +27,9 @@ interface Props {
  * - If selected month near end: anchor window to end
  * - Otherwise: center window around selected month
  */
-const getMonthWindow = (availableMonths: string[], selectedMonth: Date | null, windowSize = 6): string[] => {
+const getMonthWindow = (availableMonths: string[] = [], selectedMonth: Date, windowSize = 6): string[] => {
 
-  if (availableMonths.length === 0 || selectedMonth === null) {
-    // This likely because no transaction exist yet / return empty array will make the `MonthPicker` a <select> field with not values
-    return [];
-  }
+  if (!availableMonths?.length) return [];
 
   const selectedMonthValue = formatMonthValue(selectedMonth);
   const selectedMonthIndex = availableMonths.findIndex(m => m === selectedMonthValue);
@@ -71,17 +69,9 @@ const getMonthWindow = (availableMonths: string[], selectedMonth: Date | null, w
 
 function MonthPicker({ currentMonth, setMonth }: Props) {
 
-  /* Used to contruct list of available month */
-  const { transactions } = useTransactions();
-  const allMonths = useMemo(
-    () => getAvailableMonth(transactions),
-    [transactions]
-  );
+  const { months, loading, error } = useAvailableMonths()
 
-  const windowedMonths = useMemo(
-    () => getMonthWindow(allMonths, currentMonth, 5),
-    [allMonths, currentMonth]
-  );
+  const windowedMonths = getMonthWindow(months, currentMonth, WINDOW_SIZE);
 
   if (!currentMonth) return <></>;
 
@@ -90,20 +80,21 @@ function MonthPicker({ currentMonth, setMonth }: Props) {
       <select
         value={formatMonthValue(currentMonth)}
         onChange={e => setMonth(parseMonthValue(e.target.value))}
+        disabled={loading}
       >
-        {windowedMonths.length !== 0
-          ? windowedMonths.map(m => {
-            const label = formatMonthLabel(m);
-            return (
-              <option key={m} value={m}>{label}</option>
-            )
-          })
-          : (
-            <option>No month available</option>
-          )
-        }
+        {loading ? (
+          <option>Loading months...</option>
+        ) : (
+          windowedMonths.map(m => (
+            <option key={m} value={m}>
+              {formatMonthLabel(m)}
+            </option>
+          ))
+        )}
       </select>
+      {error && <div className="text-red-600 mt-1">{error}</div>}
       {/* TODO add button "Jump to month" => open modal => <input type="month"> */}
+      {/* TODO add loading indictor, and so remove the <option>Loading months...</option>  */}
     </>
   );
 }

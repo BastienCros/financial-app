@@ -16,3 +16,9 @@ export const formatMonthLabel = (date: Date | string): string => {
         year: 'numeric',
     }).format(dateObj);
 };
+
+export const formatToIsoString = (date: Date | string): string => {
+    const dateObj = typeof date === 'string' ? parseMonthValue(date) : date;
+
+    return dateObj.toISOString();
+}

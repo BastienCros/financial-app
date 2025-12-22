@@ -3,4 +3,4 @@
 // export { AuthProvider, useAuth } from './AuthContext';
 // export { ThemeProvider, useTheme } from './ThemeContext';
 
-export { TransactionsProvider, useTransactions } from "./TransactionsContext"
+export { QueryClientProvider, useQueryClient } from "./QueryClientContext"

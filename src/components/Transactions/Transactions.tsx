@@ -2,10 +2,10 @@
 import Image from 'next/image'
 import Card, { CardAction } from "@/components/Card";
 import { Transaction } from "@/types";
-import { useTransactions } from "@/contexts";
 import { cx } from "@/utils";
-import { formatCurrency, getRecentTransactions, getCategoryIconUrl, getCategoryLabel } from '@/helpers';
+import { formatCurrency, getCategoryIconUrl, getCategoryLabel } from '@/helpers';
 import { formatTransactionDate } from "./Transactions.helpers";
+import { useTransactionsGetSortedByDate } from '@/hooks/transactions.hooks';
 
 
 import styles from "./Transactions.module.css";
@@ -49,11 +49,27 @@ interface TransactionsProps {
 
 function Transactions({ className, count, action }: TransactionsProps) {
 
-  const { transactions } = useTransactions();
-  const lastTransactions = getRecentTransactions(transactions, count || Infinity);
+  const { data: lastTransactions, loading, error } = useTransactionsGetSortedByDate(count);
 
   // TODO: Add empty state when lastTransactions.length === 0 (no transactions imported yet)
   // Note: Currently shows recent transactions from ALL time, not filtered by selected month
+
+  if (loading) {
+    return (
+      <Card title="Transactions" headingLevel='h2' className={className} action={action}>
+        <p>Loading transactions</p>
+      </Card>
+    )
+  }
+
+  if (!lastTransactions?.length || error) {
+    return (
+      <Card title="Transactions" headingLevel='h2' className={className} action={action}>
+        <p>No transaction to display</p>
+        {error && <div className="text-red-600 mt-1">{error}</div>}
+      </Card>
+    )
+  }
 
   return (
     <Card title="Transactions" headingLevel='h2' className={className} action={action}>

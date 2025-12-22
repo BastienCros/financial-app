@@ -1,11 +1,11 @@
 'use client'
 import { useMemo } from "react";
 import { categories } from "@/src/config";
-import { calculateCategoryTotal, getMonthTransactions } from "@/helpers";
-import { useTransactions } from "@/contexts/TransactionsContext";
+import { calculateCategoryTotal } from "@/helpers";
 import Card from "@/components/Card";
 import PieChart, { PieItem } from "@/components/PieChart";
 import CategoryItem from "@/components/CategoryItem";
+import { useMonthTransactions } from "@/hooks/transactions.hooks";
 
 import styles from "./budgets.module.css";
 
@@ -40,12 +40,8 @@ interface BudgetsProps {
 }
 
 function Budgets({ className, selectedMonth }: BudgetsProps) {
-  const { transactions } = useTransactions();
 
-  const currentMonthTransactions = useMemo(
-    () => getMonthTransactions(transactions, selectedMonth),
-    [transactions, selectedMonth]
-  );
+  const { data: currentMonthTransactions, loading, error } = useMonthTransactions(selectedMonth);
 
   const categorySpend = useMemo(() => {
     return budgetCategories.map(c => ({
@@ -81,6 +77,16 @@ function Budgets({ className, selectedMonth }: BudgetsProps) {
   ];
 
   // TODO: Add empty state when currentMonthTransactions.length === 0 (no data for selected month)
+  if (loading) {
+    return (
+      <Card title="Budgets" className={className}>
+        <div className={styles.container}>
+          <p className="ml-2 text-gray-500">Loading...</p>
+        </div>
+      </Card>
+    )
+  }
+
   return (
     <Card title="Budgets" className={className}>
       {/* TODO Budget container shall be flexible according to its container size instead of viewport size */}
@@ -103,6 +109,7 @@ function Budgets({ className, selectedMonth }: BudgetsProps) {
           </ul>
         </div>
       </div>
+      {error && <div className="text-red-600 mt-1">{error}</div>}
     </Card>
   );
 }

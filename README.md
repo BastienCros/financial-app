@@ -21,15 +21,23 @@ This project started from a **Frontend Mentor** design challenge and was extende
 
 ## Key Features
 
-### Current Version
+### Current Implementation (v0.2)
 
 This project started from a Frontend Mentor design challenge and is extending into a full-featured, local-first personal finance application with persistent storage, data import, and scalable architecture.
 
-- **Category-Based Budgets**: Track monthly budgets per category
+- **Local-First Storage**: SQLite WASM + OPFS for persistent, offline-capable data
+- **Transaction Management**: View, filter, and track all transactions by month
+- **Category-Based Budgets**: Track monthly spending against category budgets
 - **Monthly Overview**: Visualize spending patterns and budget utilization
-- **Dashboard Grid**: Responsive layout with key financial metrics
-- **Pots (Savings Goals)**: Track progress toward savings targets
-- **Balance Summary**: At-a-glance financial overview
+- **Dashboard Analytics**: Real-time balance, income, and expense summaries
+- **Responsive Design**: Optimized for desktop, tablet, and mobile
+- **Concurrent Query Support**: Request ID correlation prevents race conditions
+
+### In Progress
+
+- CSV Import with automatic parsing and categorization
+- Full CRUD operations (add, edit, delete transactions)
+- Data export to JSON/CSV
 
 ### Planned Features
 
@@ -40,19 +48,35 @@ This project started from a Frontend Mentor design challenge and is extending in
 🚧 Full CRUD operations</br>
 
 #### Planned Features
+
+- CSV upload for transactions **Planned**
+- Export / Import database **Planned**
+- Comprehensive test coverage **Planned**
+- Advanced search and filtering **Planned**
 - Pots (savings goals) management
 - Recurring bills tracking
-- Full page navigation
-- Export / Import database
-- UI improvements
-- Unit testing
+- Budget alerts and notifications
+- Multi-currency support
 
 ## Tech Stack
 
 - **Framework**: Next.js 16 (App Router)
 - **UI**: React 19, TypeScript, Tailwind CSS 4
+- **Database**: SQLite WASM with OPFS (Origin Private File System)
 - **Icons**: Lucide React
-- **Features**: Server Components, CSS Modules
+- **State Management**: React Query pattern with custom hooks
+- **Features**: Server Components, CSS Modules, Web Workers
+
+## Technical Implementation
+
+### Local-First Architecture
+
+This app uses SQLite WASM compiled to WebAssembly, running entirely in the browser with no backend server. Data persists locally using the Origin Private File System (OPFS), enabling:
+
+- Offline-first functionality
+- Zero server costs
+- Privacy (data never leaves your device)
+- Fast query performance (native SQLite speed)
 
 ## Getting Started
 
