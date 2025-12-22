@@ -1,25 +1,36 @@
+// Environment detection for conditional logging
+const isDev = process.env.NODE_ENV === 'development';
+// Enable Debug only if in developpement mode
+const SQL_DB_DEBUG = isDev && process.env.SQL_DB_DEBUG;
 
-import sql from '@sqlite.org/sqlite-wasm';
+const SQL_DB_FLAGS: string = `c${SQL_DB_DEBUG ? 't' : ''}`;
+
+(globalThis as any).sqlite3InitModuleState = {
+    wasmFilename: 'sqlite3.wasm',
+    debugModule: isDev ? console.log : () => { },
+};
+
+import sqlModule, { Sqlite3Static } from '@sqlite.org/sqlite-wasm';
 import {
     Messages,
     ExecArgument,
     BidirectionalBatchResponse,
 } from './types';
-import Error from 'next/error';
 
-async function main() {
-    const con = await sql();
+const debug = SQL_DB_DEBUG ? console.log : () => { };
+const error = console.error;
 
+async function start(sqlite3: Sqlite3Static) {
 
-    if (!("OpfsDb" in con.oo1)) {
-        // TODO fallback if OPFS not available
-        postMessage({ type: "OpfsDb_not_found" } as Messages);
-        return;
-    }
-    // postMessage({ type: "OpfsDb_found" } as Messages);
-
-    // Create database in Origin-Private File System (OPFS)
-    const db = new con.oo1.OpfsDb("/main.db", "c");
+    debug('Running SQLite3 version', sqlite3.version.libVersion);
+    const db = 'opfs' in sqlite3
+        ? new sqlite3.oo1.OpfsDb('/main.db', SQL_DB_FLAGS)
+        : new sqlite3.oo1.DB('/main.db', SQL_DB_FLAGS);
+    debug(
+        'opfs' in sqlite3
+            ? `OPFS is available, created persisted database at ${db.filename}`
+            : `OPFS is not available, created transient database ${db.filename}`,
+    );
 
     /**
      * Execute SQL query with object row mode
@@ -52,10 +63,18 @@ async function main() {
             if (data.type === "EXEC") {
                 try {
                     const response = fn(data.exec);
-                    e.ports[0].postMessage(response);
+                    e.ports[0].postMessage({
+                        type: 'EXEC_RESPONSE',
+                        id: data.id, // Echo back ID
+                        data: response
+                    });
                 } catch (err: unknown) {
-                    const message = (err as any)?.message ?? String(err);
-                    e.ports[0].postMessage({ type: "error", error: message });
+                    const message = (err as Error)?.message ?? String(err);
+                    e.ports[0].postMessage({
+                        type: "error",
+                        id: data.id,
+                        data: { type: "error", error: message }
+                    });
                 }
             }
 
@@ -63,6 +82,9 @@ async function main() {
                 let response: BidirectionalBatchResponse;
                 // Transaction wrapping for atomicity: all succeed or all fail
                 db.exec("BEGIN");
+
+                debug("BEGIN BATCH_EXEC", data.sql);
+
                 const stmt = db.prepare(data.sql);
                 try {
                     for (const params of data.paramSets) {
@@ -81,7 +103,11 @@ async function main() {
                     stmt.finalize();
                     db.exec("COMMIT");
                 }
-                e.ports[0].postMessage(response)
+                e.ports[0].postMessage({
+                    type: "BATCH_RESPONSE",
+                    id: data.id, // Echo back ID
+                    data: response,
+                })
             }
         };
     });
@@ -90,4 +116,50 @@ async function main() {
     postMessage({ type: "OpfsDb_found" } as Messages);
 }
 
-main();
+const initializeSQLite = async () => {
+    try {
+        // Check OPFS support
+        debug('Checking OPFS support...');
+        debug('Has navigator.storage?', !!navigator?.storage);
+        debug('Has getDirectory?', !!navigator?.storage?.getDirectory);
+
+        debug('Loading and initializing SQLite3 module...');
+        const sqlite3 = await sqlModule({
+            print: debug, printErr: error,
+            locateFile: (path, prefix) => {
+                debug("locateFile called with:", path, prefix);
+
+                // Guard against undefined/null
+                if (!path) return prefix;
+
+                // Use dynamic base URL for production compatibility
+                const getBaseUrl = () => {
+                    if (typeof self !== 'undefined' && self.location) {
+                        return self.location.origin;
+                    }
+                    return 'http://localhost:3000';
+                };
+
+                const baseUrl = getBaseUrl();
+
+                if (path.endsWith('sqlite3.wasm')) {
+                    return `${baseUrl}/sqlite`;
+                }
+                if (path.endsWith('sqlite3-opfs-async-proxy.js')) {
+                    return `${baseUrl}/sqlite-proxy`;
+                }
+                return prefix + path;
+            },
+        });
+
+        debug('SQLite3 initialized. Checking oo1...');
+        debug('sqlite3.oo1:', sqlite3.oo1);
+        start(sqlite3);
+    } catch (err) {
+        const message = (err as Error)?.message ?? String(err);
+        const name = (err as Error)?.name ?? 'Unknown';
+        error('Initialization error:', name, message);
+    }
+};
+
+initializeSQLite();

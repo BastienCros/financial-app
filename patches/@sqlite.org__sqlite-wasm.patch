@@ -1,0 +1,31 @@
+diff --git a/sqlite-wasm/jswasm/sqlite3.mjs b/sqlite-wasm/jswasm/sqlite3.mjs
+index c8c71f279b6c87eb799b62d788fed15be58a3ebc..2e5a7e82b0cc746e4ea2b69598ad3da14b58d6a9 100644
+--- a/sqlite-wasm/jswasm/sqlite3.mjs
++++ b/sqlite-wasm/jswasm/sqlite3.mjs
+@@ -59,9 +59,10 @@ async function sqlite3InitModule(moduleArg = {}) {
+     delete globalThis.sqlite3InitModuleState;
+     sIMS.debugModule('pre-js.js sqlite3InitModuleState =', sIMS);
+ 
+-    Module['locateFile'] = function (path, prefix) {
+-      return new URL(path, import.meta.url).href;
+-    }.bind(sIMS);
++    // SQLITE PATCH: Disable hardcoded locateFile to allow custom file resolution
++    // Module['locateFile'] = function (path, prefix) {
++    //   return new URL(path, import.meta.url).href;
++    // }.bind(sIMS);
+ 
+     Module['instantiateWasm'] = function callee(imports, onSuccess) {
+       const sims = this;
+@@ -11692,7 +11693,11 @@ async function sqlite3InitModule(moduleArg = {}) {
+             promiseWasRejected = false;
+             return promiseResolve_(sqlite3);
+           };
+-          const W = new Worker(new URL(options.proxyUri, import.meta.url));
++          // SQLITE PATCH: Use absolute URL directly instead of import.meta.url
++          // const W = new Worker(new URL(options.proxyUri, import.meta.url));
++          const W = new Worker(
++            locateFile(options.proxyUri) ?? new URL(options.proxyUri, import.meta.url)
++          );
+           setTimeout(() => {
+             if (undefined === promiseWasRejected) {
+               promiseReject(

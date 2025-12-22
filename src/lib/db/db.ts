@@ -43,6 +43,20 @@ function setUpBidirectional(worker: Worker): {
     bidirectionalBatch: BidirectionalBatch
 } {
     const channel = new MessageChannel();
+    let requestId = 0;
+    const pendingPromises = new Map<number, (value: any) => void>();
+
+    channel.port1.onmessage = (event: MessageEvent) => {
+        const message = event.data;
+
+        if (message.type === "EXEC_RESPONSE" || message.type === "BATCH_RESPONSE") {
+            const resolve = pendingPromises.get(message.id);
+            if (resolve) {
+                resolve(message.data);
+                pendingPromises.delete(message.id)
+            }
+        }
+    }
 
     worker.postMessage(
         {
@@ -52,30 +66,27 @@ function setUpBidirectional(worker: Worker): {
     );
 
     async function bidirectional(exec: ExecArgument) {
-        // TODO: Race condition - concurrent calls can overwrite onmessage handler and mismatch responses
-        // Solution: Implement request ID correlation (id counter + pending promises map)
-        // Priority: Low for POC - unlikely with current usage patterns (sequential queries)
-        channel.port1.postMessage({ type: 'EXEC', exec } as Messages);
+        const id = requestId++;
 
-        const event = await new Promise<MessageEvent>(res => {
-            channel.port1.onmessage = (event: MessageEvent) => {
-                res(event);
-            }
+        const promise = new Promise((resolve) => {
+            pendingPromises.set(id, resolve);
         })
 
-        return event.data;
+        channel.port1.postMessage({ type: 'EXEC', id, exec } as Messages);
+
+        return promise;
     }
 
     async function bidirectionalBatch(sql: string, paramSets: any[][]) {
-        channel.port1.postMessage({ type: 'BATCH_EXEC', sql, paramSets } as Messages);
+        const id = requestId++;
 
-        const event = await new Promise<MessageEvent<BidirectionalBatchResponse>>(res => {
-            channel.port1.onmessage = (event: MessageEvent) => {
-                res(event);
-            }
+        const promise = new Promise<BidirectionalBatchResponse>((resolve) => {
+            pendingPromises.set(id, resolve);
         })
 
-        return event.data
+        channel.port1.postMessage({ type: 'BATCH_EXEC', id, sql, paramSets } as Messages);
+
+        return promise;
     }
 
     return {
@@ -139,7 +150,8 @@ export async function initDb(): Promise<Database> {
             description TEXT NOT NULL,
             categoryId  TEXT NOT NULL,
             amount REAL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE(date, description, amount)
         );`
         })
 

@@ -6,10 +6,12 @@ export type Messages =
     | { type: "OpfsDb_found" }
     | { type: "TRANSFER_PORT" }
     | { type: "LOAD" }
-    | { type: "EXEC"; exec: ExecArgument }
-    | { type: "BATCH_EXEC"; sql: string; paramSets: any[] };
+    | { type: "EXEC"; id: number; exec: ExecArgument }
+    | { type: "EXEC_RESPONSE"; id: number; data: any }
+    | { type: "BATCH_EXEC"; id: number; sql: string; paramSets: any[] }
+    | { type: "BATCH_RESPONSE"; id: number; data: BidirectionalBatchResponse };
 
-export type BidirectionalFunction = (input: ExecArgument) => Promise<object>;
+export type BidirectionalFunction = (input: ExecArgument) => Promise<unknown>;
 export type BidirectionalBatchResponse =
     | { type: "success" }
     | { type: "error"; message: string };
