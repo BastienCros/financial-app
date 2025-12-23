@@ -1,0 +1,8 @@
+/* WIP: only desktop sidebar is supported */
+
+@media (width >= 64rem /* 1024px */) {
+  .mainLayout {
+    display: grid;
+    grid-template-columns: auto 1fr;
+  }
+}

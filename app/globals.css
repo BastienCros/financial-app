@@ -53,7 +53,6 @@
   body {
     background: var(--color-background);
     color: var(--color-foreground);
-    font-family: Arial, Helvetica, sans-serif;
   }
 
   h1 {
