@@ -6,4 +6,10 @@ export const NAV_ITEMS = [
     { href: "/budgets", label: "Budgets", icon: ChartPie, color: '#E8A6A1', disabled: true },
     { href: "/pots", label: "Pots", icon: CircleDollarSign, color: '#9DC4BA', disabled: true },
     { href: "/bills", label: "Recurring Bills", icon: Receipt, color: '#626070', disabled: true }
-]
+];
+
+export const SIDEBAR_WIDTH = "18rem";
+export const SIDEBAR_WIDTH_ICON = "5rem";
+// TODO for later
+export const SIDEBAR_WIDTH_MOBILE = "18rem";
+export const SIDEBAR_KEYBOARD_SHORTCUT = "b";

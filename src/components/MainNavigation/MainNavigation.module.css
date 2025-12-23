@@ -11,12 +11,11 @@
    DESKTOP: >= 1024px
    ============================================ */
 @media (width >= 64rem /* 1024px */) {
-
   /* ------------------------------------------
      LAYOUT: Container & List Structure
      ------------------------------------------ */
   .container {
-    width: 300px;
+    width: var(--sidebar-width);
     display: flex;
     flex-direction: column;
     gap: calc(14 * var(--spacing));
@@ -34,7 +33,6 @@
     padding-block: calc(20 * var(--spacing));
   }
 
-
   /* ------------------------------------------
      LOGO: Heading & Text
      ------------------------------------------ */
@@ -43,7 +41,6 @@
     transition-duration: 500ms;
     transition-delay: 100ms;
   }
-
 
   /* ------------------------------------------
      SHARED ELEMENTS: Icons & Labels
@@ -62,7 +59,6 @@
     text-overflow: clip;
     white-space: nowrap;
   }
-
 
   /* ------------------------------------------
      NAVIGATION ITEMS: Links & States
@@ -115,13 +111,12 @@
     opacity: 0.5;
   }
 
-
   /* ------------------------------------------
      COLLAPSE BUTTON: Toggle Control
      ------------------------------------------ */
   .collapseButton {
     display: flex;
-    gap: calc(10 * var(--spacing));
+    gap: calc(5 * var(--spacing));
     padding-block: calc(3 * var(--spacing));
     padding-inline: calc(7 * var(--spacing)) 0;
     opacity: 0.8;
@@ -132,14 +127,13 @@
     opacity: 1;
   }
 
-
   /* ------------------------------------------
      COLLAPSED STATE: All width/spacing overrides
      ------------------------------------------ */
   /* Handle collapsed state */
   .container[data-collapsed="true"] {
     min-width: 0;
-    width: 80px;
+    width: var(--sidebar-width-icon);
 
     h2 span:not(.logo) {
       opacity: 0;
@@ -159,7 +153,8 @@
 
 /* Dummb selector to handle reduced contrast, shall be improved */
 @media (prefers-reduced-motion: reduce) {
-  .container, .container * {
+  .container,
+  .container * {
     transition: none !important;
   }
 }
