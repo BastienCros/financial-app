@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { cx } from "@/utils";
 import MainNavigation, { MainNavigationWrapper } from "@/src/components/MainNavigation";
 import "./globals.css";
+import { SkipNavContent } from "@/components/SkipNavLink";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,6 +32,7 @@ export default function RootLayout({
       >
         <MainNavigationWrapper>
           <MainNavigation />
+          <SkipNavContent />
           {children}
         </MainNavigationWrapper>
       </body>

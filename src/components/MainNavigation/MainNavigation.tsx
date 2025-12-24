@@ -1,10 +1,11 @@
 'use client'
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import styles from './MainNavigation.module.css'
-import NavigationItem from "./NavigationItem";
+import SkipNavLink from "@/components/SkipNavLink";
 import { ArrowBigLeftDash } from "lucide-react";
+import NavigationItem from "./NavigationItem";
 import { NAV_ITEMS } from "./MainNavigation.constants"
+import styles from './MainNavigation.module.css'
 
 // TODO MainNavigation collapsed state is currently stored in memory, if needed for many page later consider creating a context
 // TODO add "got to main content" hidden link
@@ -24,6 +25,8 @@ function MainNavigation() {
       >
         <span className={styles.logo}>F</span><span>inance</span>
       </h2>
+      {/* Skip to main content */}
+      <SkipNavLink />
       <ul className={styles.list}>
         {NAV_ITEMS.map((item) => {
           const Icon = item.icon;
