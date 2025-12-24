@@ -25,8 +25,10 @@ function Summary({ total, limit }: SummaryProps) {
   return (
     <div className={styles.summaryWrapper}>
       <div className={styles.summary}>
-        <p className="text-2xl font-mono font-bold pb-3">${total.toFixed(2)}</p>
-        <p className=" text-fg-subtle">of ${limit.toFixed(2)} limit</p>
+        <p className={styles.summaryTotal}> ${total.toFixed(2)}</p>
+        <p className={styles.summaryLimit}>
+          of <span className="font-medium">${limit.toFixed(2)}</span> limit
+        </p>
       </div>
     </div>
   )
@@ -56,7 +58,7 @@ function Budgets({ className, selectedMonth }: BudgetsProps) {
 
 
   const totalSpent = categorySpend.reduce((acc, item) => acc + item.spend, 0);
- 
+
   // Compute total on remaining categories for Chart
   const otherTotal = categorySpend
     .slice(NUMBER_OF_CATEGORIES)
@@ -77,7 +79,7 @@ function Budgets({ className, selectedMonth }: BudgetsProps) {
       color: item.color
     } as PieItem)),
   ];
-  
+
   // TODO: Add empty state when currentMonthTransactions.length === 0 (no data for selected month)
   return (
     <Card title="Budgets" className={className}>

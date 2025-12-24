@@ -66,11 +66,12 @@
   .tw-card {
     --card-surface: var(--color-surface);
     --card-text: var(--color-foreground);
+    --card-padding-multiplier: 6;
 
     color: var(--card-text);
     background-color: var(--card-surface);
     border-radius: var(--radius-xl);
-    padding: --spacing(6);
+    padding: calc(var(--card-padding-multiplier) * var(--spacing));
   }
 
   .tw-card[data-variant="background"] {

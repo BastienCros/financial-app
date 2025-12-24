@@ -18,10 +18,37 @@
   justify-content: center;
   align-items: center;
   pointer-events: none;
+
+  /* Enables container-based fluid typography */
+  container-type: inline-size;
 }
 
 .summary {
   text-align: center;
+}
+
+.summaryTotal {
+  /* Fallback for browser not supporting container-based sizes */
+  font-size: var(--text-2xl);
+  font-family: var(--font-mono);
+  font-weight: var(--font-weight-bold);
+  padding-bottom: calc(3 * var(--spacing));
+}
+
+.summaryLimit {
+  /* Fallback for browser not supporting container-based sizes */
+  font-size: var(--text-xl);
+  color: var(--color-fg-subtle);
+}
+
+@supports (width: 1cqi) {
+  .summaryTotal {
+    font-size: clamp(1rem, 0.4rem + 6cqi, 1.5rem);
+  }
+
+  .summaryLimit {
+    font-size: clamp(0.875rem, 0.1rem + 5cqi, 1.25rem);
+  }
 }
 
 .listWrapper {
@@ -40,8 +67,8 @@
 @media (min-width: 40rem) {
   .container {
     flex-direction: row;
-    justify-content: center;
-    gap: calc(16 * var(--spacing))
+    justify-content: space-between;
+    gap: calc(6 * var(--spacing));
   }
 
   .list {
