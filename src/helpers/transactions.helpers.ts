@@ -44,10 +44,12 @@ export const getAvailableMonth = (transactions: Transaction[]) => {
     );
 
     // Convert to array and sort (newest first)
-    return Array.from(monthSet).sort((a, b) => a.localeCompare(b));
+    return Array.from(monthSet).sort((a, b) => b.localeCompare(a));
 }
 
-export const getMonthTransactions = (transactions: Transaction[], month: Date): Transaction[] => {
+export const getMonthTransactions = (transactions: Transaction[], month: Date | null): Transaction[] => {
+    if (transactions.length === 0 || month === null) return [];
+
     const selectedYear = month.getFullYear();
     const selectedMonth = month.getMonth();
 
@@ -57,3 +59,17 @@ export const getMonthTransactions = (transactions: Transaction[], month: Date): 
             tDate.getMonth() === selectedMonth;
     })
 }
+
+// Return today or most recent available month
+export const getInitialMonth = (transactions: Transaction[]) => {
+    const available = getAvailableMonth(transactions);
+    const today = new Date();
+    const currentMonth = formatMonthValue(today);
+
+    // No data yet
+    if (available.length === 0) return null;
+
+    return available.includes(currentMonth)
+        ? today
+        : new Date(available[0]);
+};

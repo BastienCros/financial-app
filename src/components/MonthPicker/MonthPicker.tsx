@@ -8,7 +8,7 @@ import { getAvailableMonth, formatMonthLabel, formatMonthValue, parseMonthValue 
 // Implement better UI
 
 interface Props {
-  currentMonth: Date;
+  currentMonth: Date | null;
   setMonth: (date: Date) => void;
 }
 
@@ -26,7 +26,13 @@ interface Props {
  * - If selected month near end: anchor window to end
  * - Otherwise: center window around selected month
  */
-const getMonthWindow = (availableMonths: string[], selectedMonth: Date, windowSize = 6): string[] => {
+const getMonthWindow = (availableMonths: string[], selectedMonth: Date | null, windowSize = 6): string[] => {
+
+  if (availableMonths.length === 0 || selectedMonth === null) {
+    // This likely because no transaction exist yet / return empty array will make the `MonthPicker` a <select> field with not values
+    return [];
+  }
+
   const selectedMonthValue = formatMonthValue(selectedMonth);
   const selectedMonthIndex = availableMonths.findIndex(m => m === selectedMonthValue);
 
@@ -65,7 +71,7 @@ const getMonthWindow = (availableMonths: string[], selectedMonth: Date, windowSi
 
 function MonthPicker({ currentMonth, setMonth }: Props) {
 
-  /* Used to contruct list of available mont */
+  /* Used to contruct list of available month */
   const { transactions } = useTransactions();
   const allMonths = useMemo(
     () => getAvailableMonth(transactions),
@@ -77,18 +83,25 @@ function MonthPicker({ currentMonth, setMonth }: Props) {
     [allMonths, currentMonth]
   );
 
+  if (!currentMonth) return <></>;
+
   return (
     <>
       <select
         value={formatMonthValue(currentMonth)}
         onChange={e => setMonth(parseMonthValue(e.target.value))}
       >
-        {windowedMonths.map(m => {
-          const label = formatMonthLabel(m);
-          return (
-            <option key={m} value={m}>{label}</option>
+        {windowedMonths.length !== 0
+          ? windowedMonths.map(m => {
+            const label = formatMonthLabel(m);
+            return (
+              <option key={m} value={m}>{label}</option>
+            )
+          })
+          : (
+            <option>No month available</option>
           )
-        })}
+        }
       </select>
       {/* TODO add button "Jump to month" => open modal => <input type="month"> */}
     </>

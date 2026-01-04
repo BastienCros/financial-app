@@ -4,9 +4,14 @@ import { useState } from "react";
 import BalanceSummary from "@/components/BalanceSummary";
 import DashboardGrid from "@/components/DashboardGrid";
 import MonthPicker from "@/components/MonthPicker";
+import { useTransactions } from "@/src/contexts";
+import { getInitialMonth } from "@/src/helpers";
 
 export default function DashboardContent() {
-  const [selectedMonth, setSelectedMonth] = useState(new Date());
+  const { transactions } = useTransactions();
+  const [selectedMonth, setSelectedMonth] = useState(() =>
+    getInitialMonth(transactions)
+  );
 
   return (
     <>

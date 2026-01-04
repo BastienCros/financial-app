@@ -35,7 +35,7 @@ function Summary({ total, limit }: SummaryProps) {
 }
 
 interface BudgetsProps {
-  selectedMonth: Date;
+  selectedMonth: Date | null;
   className?: string;
 }
 

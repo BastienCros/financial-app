@@ -25,7 +25,7 @@ function BalanceCard({ title, amount, variant = "light" }: BalanceCardProps) {
 }
 
 interface BalanceSummaryProps {
-  month: Date;
+  month: Date | null;
 }
 
 function BalanceSummary({ month }: BalanceSummaryProps) {
@@ -42,8 +42,6 @@ function BalanceSummary({ month }: BalanceSummaryProps) {
     income: getTotalIncome(currentMonthTransactions),
     expenses: getTotalExpenses(currentMonthTransactions)
   }), [currentMonthTransactions]);
-
-  // TODO: Add empty state when currentMonthTransactions.length === 0 (no data for selected month)
 
   return (
     <div className="w-full">
