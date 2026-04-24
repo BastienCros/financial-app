@@ -8,7 +8,7 @@ import RecurringBills from "@/components/RecurringBills";
 import { CardAction } from "@/components/Card";
 
 interface DashboardGridProps extends React.HTMLAttributes<HTMLDivElement> {
-  selectedMonth: Date | null;
+  selectedMonth: string | null;
   className?: string;
 }
 

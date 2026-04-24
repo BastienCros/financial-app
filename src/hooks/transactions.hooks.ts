@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { Transaction } from "@/types";
-import { formatMonthValue, formatToIsoString } from "@/helpers";
+import { formatToIsoString } from "@/helpers";
 import { useMutation, useQuery } from "./useQuery.hooks";
 
 // Invalidation key - all transaction queries share this key
@@ -16,7 +16,7 @@ const KEY = "transactions";
  * LIMIT -1 is SQLite syntax for "no limit"
  */
 export function useTransactionsGetSortedByDate(limit?: number) {
-    const sql = `SELECT * FROM transactions ORDER BY date DESC LIMIT ?`
+    const sql = `SELECT * FROM transactions ORDER BY date DESC LIMIT ?`;
     const args = limit ?? -1;
 
     const { data, loading, error } = useQuery<Transaction[]>(KEY, sql, [args]);
@@ -24,7 +24,7 @@ export function useTransactionsGetSortedByDate(limit?: number) {
     return {
         data,
         loading,
-        error
+        error,
     };
 }
 
@@ -46,23 +46,24 @@ export function useAvailableMonths(limit?: number) {
     `;
     const args = limit ?? -1;
 
-    const { data, loading, error } = useQuery<AvalaibleMonth[]>(KEY, sql, [args]);
+    const { data, loading, error } = useQuery<AvalaibleMonth[]>(KEY, sql, [
+        args,
+    ]);
 
     // Extract month strings from objects
-    const months = data?.map(row => row.month) ?? [];
+    const months = data?.map((row) => row.month) ?? [];
 
     return {
         months,
         loading,
-        error
+        error,
     };
 }
 
 /**
  * Get all transactions for a specific month
  */
-export function useMonthTransactions(month: Date) {
-    const monthStr = formatMonthValue(month);
+export function useMonthTransactions(month: string) {
     const sql = `
         SELECT *
         FROM transactions
@@ -70,12 +71,12 @@ export function useMonthTransactions(month: Date) {
         ORDER BY date DESC
     `;
 
-    const { data, loading, error } = useQuery<Transaction[]>(KEY, sql, [monthStr]);
+    const { data, loading, error } = useQuery<Transaction[]>(KEY, sql, [month]);
 
     return {
         data,
         loading,
-        error
+        error,
     };
 }
 
@@ -85,10 +86,9 @@ export function useMonthTransactions(month: Date) {
  * SQL aggregations return single row wrapped in array: [{balance: 100, income: 500, expenses: 400}]
  * Extracted the first element with data?.[0]
  */
-type MonthStats = { balance: number, income: number, expenses: number };
+type MonthStats = { balance: number; income: number; expenses: number };
 
-export function useMonthStats(month: Date) {
-    const monthStr = formatMonthValue(month);
+export function useMonthStats(month: string) {
     const sql = `
         SELECT
             SUM(amount) as balance,
@@ -98,14 +98,20 @@ export function useMonthStats(month: Date) {
         WHERE strftime('%Y-%m', date) = ?
     `;
 
-    const { data, loading, error } = useQuery<MonthStats[]>(KEY, sql, [monthStr]);
+    const { data, loading, error } = useQuery<MonthStats[]>(KEY, sql, [month]);
     // Extract first (and only) row from aggregation result
-    const { balance, income, expenses } = data?.[0] ?? { balance: 0, income: 0, expenses: 0 };
+    const { balance, income, expenses } = data?.[0] ?? {
+        balance: 0,
+        income: 0,
+        expenses: 0,
+    };
 
     return {
-        balance, income, expenses,
+        balance,
+        income,
+        expenses,
         loading,
-        error
+        error,
     };
 }
 
@@ -121,18 +127,21 @@ export function useMonthStats(month: Date) {
  */
 export function useAddTransactions() {
     // Memoize to prevent mutate function recreation on every render
-    const prepareParams = useCallback((t: Transaction) => [
-        formatToIsoString(t.date),
-        t.description,
-        t.categoryId,
-        t.amount
-    ], []);
+    const prepareParams = useCallback(
+        (t: Transaction) => [
+            formatToIsoString(t.date),
+            t.description,
+            t.categoryId,
+            t.amount,
+        ],
+        [],
+    );
 
     const { mutate, loading, error } = useMutation<Transaction>(
         KEY,
         `INSERT INTO transactions (date, description, categoryId, amount) VALUES (?,?,?,?)`,
-        prepareParams
+        prepareParams,
     );
 
-    return { mutate, loading, error }
+    return { mutate, loading, error };
 }

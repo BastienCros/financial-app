@@ -39,7 +39,7 @@ async function populateDb(db: Database) {
         return Promise.resolve();
     }
 
-    isPopulating = true;  // ← Set lock
+    isPopulating = true;  // Set lock
 
     try {
         const result = await db.exec({ sql: 'SELECT * FROM transactions LIMIT 1' }) as Transaction[];
@@ -60,7 +60,7 @@ async function populateDb(db: Database) {
             ])
         );
     } finally {
-        isPopulating = false;  // ← Release lock
+        isPopulating = false;  // Release lock
     }
 }
 
