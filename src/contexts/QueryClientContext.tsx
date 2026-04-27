@@ -1,9 +1,16 @@
-'use client'
-import { createContext, useCallback, useContext, useEffect, useState, useMemo } from 'react';
+"use client";
+import {
+    createContext,
+    useCallback,
+    useContext,
+    useEffect,
+    useState,
+    useMemo,
+} from "react";
 import { initDb, type Database } from "@/lib/db";
-import { formatToIsoString } from '@/helpers';
-import { mockTransactions } from '@/data';
-import { Transaction } from '@/types';
+import { formatToIsoString } from "@/helpers";
+import { mockTransactions } from "@/data";
+import { Transaction } from "@/types";
 
 /**
  * Invalidation System:
@@ -20,7 +27,7 @@ const QueryClientContext = createContext<{
     db: Database;
     invalidations: Invalidations;
     invalidate: (key: string) => void;
-    errorDb: Error | null
+    errorDb: Error | null;
 } | null>(null);
 
 interface Props {
@@ -29,9 +36,13 @@ interface Props {
 
 let isPopulating = false;
 
+// TODO Intentionally runs in production: no CSV import yet (BAB-11), so mock data is the only
+// way to seed the DB. Once CSV import is live, this moves to dev-only.
 async function populateDb(db: Database) {
-    if (db.conn !== "opfs") throw new Error("Error populating database: wrong state: " + db.conn);
-    if (!db.batchExec || !db.exec) throw new Error("Error populating database: wrong setup");
+    if (db.conn !== "opfs")
+        throw new Error("Error populating database: wrong state: " + db.conn);
+    if (!db.batchExec || !db.exec)
+        throw new Error("Error populating database: wrong setup");
 
     // Check lock first
     if (isPopulating) {
@@ -39,10 +50,12 @@ async function populateDb(db: Database) {
         return Promise.resolve();
     }
 
-    isPopulating = true;  // Set lock
+    isPopulating = true; // Set lock
 
     try {
-        const result = await db.exec({ sql: 'SELECT * FROM transactions LIMIT 1' }) as Transaction[];
+        const result = (await db.exec({
+            sql: "SELECT * FROM transactions LIMIT 1",
+        })) as Transaction[];
 
         if (result.length > 0) {
             console.log("Transactions DB already created / skip populating");
@@ -52,29 +65,33 @@ async function populateDb(db: Database) {
         console.log("Populating database with mock data...");
         return db.batchExec(
             `INSERT INTO transactions (date, description, categoryId, amount) VALUES (?,?,?,?)`,
-            mockTransactions.map(t => [
+            mockTransactions.map((t) => [
                 formatToIsoString(t.date),
                 t.description,
                 t.categoryId,
-                t.amount
-            ])
+                t.amount,
+            ]),
         );
     } finally {
-        isPopulating = false;  // Release lock
+        isPopulating = false; // Release lock
     }
 }
 
 export function QueryClientProvider({ children }: Props) {
     const [invalidations, setInvalidations] = useState<Invalidations>({});
-    const [db, setDb] = useState<Database>({ conn: "loading", exec: undefined, batchExec: undefined })
+    const [db, setDb] = useState<Database>({
+        conn: "loading",
+        exec: undefined,
+        batchExec: undefined,
+    });
     const [errorDb, setErrorDb] = useState<Error | null>(null);
 
     const invalidate = useCallback((key: string) => {
-        setInvalidations(prev => ({
+        setInvalidations((prev) => ({
             ...prev,
             [key]: (prev[key] || 0) + 1,
-        }))
-    }, [])
+        }));
+    }, []);
 
     // Init Database
     useEffect(() => {
@@ -82,23 +99,22 @@ export function QueryClientProvider({ children }: Props) {
             .then((db) => {
                 // TODO Remove DB populating from dataset when CSV import is ready
                 return populateDb(db).then(() => db);
-
             })
-            .then(db => {
+            .then((db) => {
                 // Now Database object is ready to use
-                setDb(db)
+                setDb(db);
             })
             .catch((err) => {
-                console.error('Error initialising database ', err);
+                console.error("Error initialising database ", err);
                 setErrorDb(err);
             });
-    }, [])
+    }, []);
 
     useEffect(() => {
         // Expose db to console for debugging (dev only)
-        if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === "development") {
             (window as any).__db = db;
-            console.log('Database exposed as window.__db for debugging');
+            console.log("Database exposed as window.__db for debugging");
         }
     }, [db]);
 
@@ -108,22 +124,29 @@ export function QueryClientProvider({ children }: Props) {
     // - invalidations: changes when invalidate() is called
     // - invalidate: stable (useCallback with empty deps)
     // - errorDb: changes on error
-    const value = useMemo(() => ({
-        db, invalidations, invalidate, errorDb
-    }), [db, invalidations, invalidate, errorDb]);
+    const value = useMemo(
+        () => ({
+            db,
+            invalidations,
+            invalidate,
+            errorDb,
+        }),
+        [db, invalidations, invalidate, errorDb],
+    );
 
     return (
-        <QueryClientContext.Provider value={value} >
+        <QueryClientContext.Provider value={value}>
             {children}
         </QueryClientContext.Provider>
     );
 }
 
-
 export function useQueryClient() {
     const context = useContext(QueryClientContext);
     if (context === null) {
-        throw new Error('useQueryClient must be used within a QueryClientContext');
+        throw new Error(
+            "useQueryClient must be used within a QueryClientContext",
+        );
     }
     return context;
 }

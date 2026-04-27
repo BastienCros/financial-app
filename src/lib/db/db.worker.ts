@@ -1,33 +1,29 @@
 // Environment detection for conditional logging
-const isDev = process.env.NODE_ENV === 'development';
+const isDev = process.env.NODE_ENV === "development";
 // Enable Debug only if in developpement mode
 const SQL_DB_DEBUG = isDev && process.env.SQL_DB_DEBUG;
 
-const SQL_DB_FLAGS: string = `c${SQL_DB_DEBUG ? 't' : ''}`;
+const SQL_DB_FLAGS: string = `c${SQL_DB_DEBUG ? "t" : ""}`;
 
 (globalThis as any).sqlite3InitModuleState = {
-    wasmFilename: 'sqlite3.wasm',
-    debugModule: isDev ? console.log : () => { },
+    wasmFilename: "sqlite3.wasm",
+    debugModule: isDev ? console.log : () => {},
 };
 
-import sqlModule, { Sqlite3Static } from '@sqlite.org/sqlite-wasm';
-import {
-    Messages,
-    ExecArgument,
-    BidirectionalBatchResponse,
-} from './types';
+import sqlModule, { Sqlite3Static } from "@sqlite.org/sqlite-wasm";
+import { Messages, ExecArgument, BidirectionalBatchResponse } from "./types";
 
-const debug = SQL_DB_DEBUG ? console.log : () => { };
+const debug = SQL_DB_DEBUG ? console.log : () => {};
 const error = console.error;
 
 async function start(sqlite3: Sqlite3Static) {
-
-    debug('Running SQLite3 version', sqlite3.version.libVersion);
-    const db = 'opfs' in sqlite3
-        ? new sqlite3.oo1.OpfsDb('/main.db', SQL_DB_FLAGS)
-        : new sqlite3.oo1.DB('/main.db', SQL_DB_FLAGS);
+    debug("Running SQLite3 version", sqlite3.version.libVersion);
+    const db =
+        "opfs" in sqlite3
+            ? new sqlite3.oo1.OpfsDb("/main.db", SQL_DB_FLAGS)
+            : new sqlite3.oo1.DB("/main.db", SQL_DB_FLAGS);
     debug(
-        'opfs' in sqlite3
+        "opfs" in sqlite3
             ? `OPFS is available, created persisted database at ${db.filename}`
             : `OPFS is not available, created transient database ${db.filename}`,
     );
@@ -46,7 +42,6 @@ async function start(sqlite3: Sqlite3Static) {
         return result as any as object;
     }
 
-
     // Set up message handler for bidirectional communication via MessageChannel
     // MessageChannel is needed because worker can only postMessage (async), not return values
     addEventListener("message", async (e) => {
@@ -64,16 +59,16 @@ async function start(sqlite3: Sqlite3Static) {
                 try {
                     const response = fn(data.exec);
                     e.ports[0].postMessage({
-                        type: 'EXEC_RESPONSE',
+                        type: "EXEC_RESPONSE",
                         id: data.id, // Echo back ID
-                        data: response
+                        data: response,
                     });
                 } catch (err: unknown) {
                     const message = (err as Error)?.message ?? String(err);
                     e.ports[0].postMessage({
                         type: "error",
                         id: data.id,
-                        data: { type: "error", error: message }
+                        data: { type: "error", error: message },
                     });
                 }
             }
@@ -85,33 +80,31 @@ async function start(sqlite3: Sqlite3Static) {
 
                 debug("BEGIN BATCH_EXEC", data.sql);
 
-                const stmt = db.prepare(data.sql);
                 try {
+                    const stmt = db.prepare(data.sql);
+
                     for (const params of data.paramSets) {
                         stmt.bind(params);
                         stmt.step();
                         stmt.reset();
                     }
-                    response = { type: "success" }
-
+                    db.exec("COMMIT");
+                    response = { type: "success" };
                 } catch (err: unknown) {
                     // Rollback on error - undo all inserts in this batch
                     db.exec("ROLLBACK");
-                    response = { type: "error", message: String(err) }
-
+                    response = { type: "error", message: String(err) };
                 } finally {
                     stmt.finalize();
-                    db.exec("COMMIT");
                 }
                 e.ports[0].postMessage({
                     type: "BATCH_RESPONSE",
                     id: data.id, // Echo back ID
                     data: response,
-                })
+                });
             }
         };
     });
-
 
     postMessage({ type: "OpfsDb_found" } as Messages);
 }
@@ -119,13 +112,14 @@ async function start(sqlite3: Sqlite3Static) {
 const initializeSQLite = async () => {
     try {
         // Check OPFS support
-        debug('Checking OPFS support...');
-        debug('Has navigator.storage?', !!navigator?.storage);
-        debug('Has getDirectory?', !!navigator?.storage?.getDirectory);
+        debug("Checking OPFS support...");
+        debug("Has navigator.storage?", !!navigator?.storage);
+        debug("Has getDirectory?", !!navigator?.storage?.getDirectory);
 
-        debug('Loading and initializing SQLite3 module...');
+        debug("Loading and initializing SQLite3 module...");
         const sqlite3 = await sqlModule({
-            print: debug, printErr: error,
+            print: debug,
+            printErr: error,
             locateFile: (path, prefix) => {
                 debug("locateFile called with:", path, prefix);
 
@@ -134,31 +128,31 @@ const initializeSQLite = async () => {
 
                 // Use dynamic base URL for production compatibility
                 const getBaseUrl = () => {
-                    if (typeof self !== 'undefined' && self.location) {
+                    if (typeof self !== "undefined" && self.location) {
                         return self.location.origin;
                     }
-                    return 'http://localhost:3000';
+                    return "http://localhost:3000";
                 };
 
                 const baseUrl = getBaseUrl();
 
-                if (path.endsWith('sqlite3.wasm')) {
+                if (path.endsWith("sqlite3.wasm")) {
                     return `${baseUrl}/sqlite`;
                 }
-                if (path.endsWith('sqlite3-opfs-async-proxy.js')) {
+                if (path.endsWith("sqlite3-opfs-async-proxy.js")) {
                     return `${baseUrl}/sqlite-proxy`;
                 }
                 return prefix + path;
             },
         });
 
-        debug('SQLite3 initialized. Checking oo1...');
-        debug('sqlite3.oo1:', sqlite3.oo1);
+        debug("SQLite3 initialized. Checking oo1...");
+        debug("sqlite3.oo1:", sqlite3.oo1);
         start(sqlite3);
     } catch (err) {
         const message = (err as Error)?.message ?? String(err);
-        const name = (err as Error)?.name ?? 'Unknown';
-        error('Initialization error:', name, message);
+        const name = (err as Error)?.name ?? "Unknown";
+        error("Initialization error:", name, message);
     }
 };
 

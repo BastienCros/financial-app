@@ -19,7 +19,7 @@ import { useQueryClient } from "@/contexts";
 export function useQuery<T>(
     key: string,
     query: string,
-    args: BindingSpec | undefined = undefined
+    args: BindingSpec | undefined = undefined,
 ) {
     const { db, invalidations } = useQueryClient();
     const [data, setData] = useState<T>();
@@ -34,13 +34,13 @@ export function useQuery<T>(
     useEffect(() => {
         const runQuery = async () => {
             if (!db.exec || db.conn === "loading") {
-                return;  // ← Skip query until db ready
+                return; // ← Skip query until db ready
             }
             setLoading(true);
             try {
                 const result = await db.exec({
                     sql: query,
-                    bind: args
+                    bind: args,
                 });
                 // Type assertion - caller must ensure T matches SQL result shape
                 setData(result as T);
@@ -51,16 +51,16 @@ export function useQuery<T>(
             } finally {
                 setLoading(false);
             }
-        }
+        };
 
-        runQuery()
+        runQuery();
 
         // Serialize args to avoid ref comparison causing infinite loops
         // Disable exhaustive-deps since we intentionally use 'args' but track 'argsKey'
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [key, invalidationKey, db, query, argsKey])
+    }, [key, invalidationKey, db, query, argsKey]);
 
-    return { data, loading, error }
+    return { data, loading, error };
 }
 
 /**
@@ -85,36 +85,35 @@ export function useMutation<T>(
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
-    const mutate = useCallback(async (data: T[]) => {
-        if (!db.batchExec || db.conn === "loading") {
-            throw new Error("DB not ready");
-        }
-
-        setLoading(true);
-        try {
-            // TODO proper type for batchExec return
-            const result = await db.batchExec(
-                query,
-                data.map(d => toBindParams(d))
-            )
-
-            if (result.type === "error") {
-                setError(result.message);
-            } else {
-                // Else successfull insert: nothing to do
-                invalidate(key);
+    const mutate = useCallback(
+        async (data: T[]) => {
+            if (!db.batchExec || db.conn === "loading") {
+                throw new Error("DB not ready");
             }
 
-        } catch (error) {
-            console.log(`Error running query`, error);
-            // TODO Handling error in db: currently exec does not handle error
-            setError("Error running query " + JSON.stringify(error));
-        } finally {
-            setLoading(false);
-        }
+            setLoading(true);
+            try {
+                const result = await db.batchExec(
+                    query,
+                    data.map((d) => toBindParams(d)),
+                );
 
+                if (result.type === "error") {
+                    setError(result.message);
+                } else {
+                    // Else successfull insert: nothing to do
+                    invalidate(key);
+                }
+            } catch (error) {
+                console.error(`Error running query`, error);
+                // TODO Handling error in db: currently exec does not handle error
+                setError("Error running query " + JSON.stringify(error));
+            } finally {
+                setLoading(false);
+            }
+        },
+        [key, query, toBindParams, db, invalidate],
+    );
 
-    }, [key, query, toBindParams, db, invalidate]);
-
-    return { mutate, loading, error }
+    return { mutate, loading, error };
 }

@@ -147,7 +147,7 @@ function Budgets({ className, selectedMonth }: BudgetsProps) {
                     </ul>
                 </div>
             </div>
-            {/* TODO potentialy dead code as error will return no data => early return. TO BE CHECKED */}
+            {/* TODO dead code as error will return no data => early return. action is to handle error so relevant message can be displayed */}
             {error && <div className="text-red-600 mt-1">{error}</div>}
         </Card>
     );
