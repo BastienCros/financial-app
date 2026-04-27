@@ -1,3 +1,5 @@
+import { PreparedStatement } from "@sqlite.org/sqlite-wasm";
+
 // Environment detection for conditional logging
 const isDev = process.env.NODE_ENV === "development";
 // Enable Debug only if in developpement mode
@@ -39,7 +41,7 @@ async function start(sqlite3: Sqlite3Static) {
             ...input,
         } as any);
 
-        return result as any as object;
+        return result as object;
     }
 
     // Set up message handler for bidirectional communication via MessageChannel
@@ -80,8 +82,10 @@ async function start(sqlite3: Sqlite3Static) {
 
                 debug("BEGIN BATCH_EXEC", data.sql);
 
+                let stmt: PreparedStatement | null = null;
+
                 try {
-                    const stmt = db.prepare(data.sql);
+                    stmt = db.prepare(data.sql);
 
                     for (const params of data.paramSets) {
                         stmt.bind(params);
@@ -95,7 +99,9 @@ async function start(sqlite3: Sqlite3Static) {
                     db.exec("ROLLBACK");
                     response = { type: "error", message: String(err) };
                 } finally {
-                    stmt.finalize();
+                    if (stmt) {
+                        stmt.finalize();
+                    }
                 }
                 e.ports[0].postMessage({
                     type: "BATCH_RESPONSE",
