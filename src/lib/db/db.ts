@@ -5,7 +5,7 @@ import {
     BidirectionalBatch,
     Database,
     BidirectionalBatchResponse,
-} from './types';
+} from "./types";
 
 /**
  * Initialize Web Worker and detect OPFS (Origin-Private File System) support
@@ -21,10 +21,10 @@ function setupWorker() {
                 res(undefined);
             }
             if (message.type === "OpfsDb_found") {
-                res(worker)
+                res(worker);
             }
-        }
-    })
+        };
+    });
 }
 
 /**
@@ -39,40 +39,56 @@ function setupWorker() {
  * they cannot directly return values like regular async functions.
  */
 function setUpBidirectional(worker: Worker): {
-    bidirectional: BidirectionalFunction,
-    bidirectionalBatch: BidirectionalBatch
+    bidirectional: BidirectionalFunction;
+    bidirectionalBatch: BidirectionalBatch;
 } {
     const channel = new MessageChannel();
     let requestId = 0;
-    const pendingPromises = new Map<number, (value: any) => void>();
+    const pendingPromises = new Map<
+        number,
+        { resolve: (value: any) => void; reject: (reason: any) => void }
+    >();
 
     channel.port1.onmessage = (event: MessageEvent) => {
         const message = event.data;
 
-        if (message.type === "EXEC_RESPONSE" || message.type === "BATCH_RESPONSE") {
-            const resolve = pendingPromises.get(message.id);
-            if (resolve) {
-                resolve(message.data);
-                pendingPromises.delete(message.id)
+        if (
+            message.type === "EXEC_RESPONSE" ||
+            message.type === "BATCH_RESPONSE"
+        ) {
+            const pending = pendingPromises.get(message.id);
+            if (pending) {
+                pending.resolve(message.data);
+                pendingPromises.delete(message.id);
             }
         }
-    }
+
+        if (message.type === "ERROR") {
+            const pending = pendingPromises.get(message.id);
+            if (pending) {
+                pending.reject(
+                    new Error(message.data?.error ?? "Unknown error"),
+                );
+                pendingPromises.delete(message.id);
+            }
+        }
+    };
 
     worker.postMessage(
         {
-            type: "TRANSFER_PORT"
+            type: "TRANSFER_PORT",
         } as Messages,
-        [channel.port2]
+        [channel.port2],
     );
 
     async function bidirectional(exec: ExecArgument) {
         const id = requestId++;
 
-        const promise = new Promise((resolve) => {
-            pendingPromises.set(id, resolve);
-        })
+        const promise = new Promise((resolve, reject) => {
+            pendingPromises.set(id, { resolve, reject });
+        });
 
-        channel.port1.postMessage({ type: 'EXEC', id, exec } as Messages);
+        channel.port1.postMessage({ type: "EXEC", id, exec } as Messages);
 
         return promise;
     }
@@ -80,11 +96,18 @@ function setUpBidirectional(worker: Worker): {
     async function bidirectionalBatch(sql: string, paramSets: any[][]) {
         const id = requestId++;
 
-        const promise = new Promise<BidirectionalBatchResponse>((resolve) => {
-            pendingPromises.set(id, resolve);
-        })
+        const promise = new Promise<BidirectionalBatchResponse>(
+            (resolve, reject) => {
+                pendingPromises.set(id, { resolve, reject });
+            },
+        );
 
-        channel.port1.postMessage({ type: 'BATCH_EXEC', id, sql, paramSets } as Messages);
+        channel.port1.postMessage({
+            type: "BATCH_EXEC",
+            id,
+            sql,
+            paramSets,
+        } as Messages);
 
         return promise;
     }
@@ -136,7 +159,7 @@ export async function initDb(): Promise<Database> {
             conn: worker ? "opfs" : "local",
             exec: execWorker,
             batchExec: execBatchWorker,
-        }
+        };
 
         // TODO: Schema Separation
         // Currently creating transaction table in lib/db layer violates separation of concerns
@@ -152,8 +175,8 @@ export async function initDb(): Promise<Database> {
             amount REAL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             UNIQUE(date, description, amount)
-        );`
-        })
+        );`,
+        });
 
         return db;
     })();
