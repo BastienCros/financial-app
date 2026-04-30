@@ -7,7 +7,7 @@ import {
     useState,
     useMemo,
 } from "react";
-import { initDb, type Database } from "@/lib/db";
+import { initDb, getDbSync, type Database } from "@/lib/db";
 import { formatToIsoString } from "@/helpers";
 import { mockTransactions } from "@/data";
 import { Transaction } from "@/types";
@@ -79,11 +79,7 @@ async function populateDb(db: Database) {
 
 export function QueryClientProvider({ children }: Props) {
     const [invalidations, setInvalidations] = useState<Invalidations>({});
-    const [db, setDb] = useState<Database>({
-        conn: "loading",
-        exec: undefined,
-        batchExec: undefined,
-    });
+    const [db, setDb] = useState<Database>(() => getDbSync());
     const [errorDb, setErrorDb] = useState<Error | null>(null);
 
     const invalidate = useCallback((key: string) => {

@@ -12,8 +12,11 @@ import {
  * Returns undefined if OPFS is not available in the browser
  */
 function setupWorker() {
-    return new Promise<Worker | undefined>(res => {
-        const worker = new Worker(new URL('./db.worker.ts', import.meta.url))
+    return new Promise<Worker | undefined>((res) => {
+        const url = new URL("./db.worker.ts", import.meta.url);
+        const worker = new Worker(url, { type: "module" });
+        worker.onerror = (e) =>
+            console.error("Worker onerror:", e.message, e.filename, e.lineno);
 
         worker.onmessage = (e) => {
             const message: Messages = e.data;
@@ -121,6 +124,11 @@ function setUpBidirectional(worker: Worker): {
 // Singleton pattern: Only one database connection across the application
 let db: Database = { conn: "loading", exec: undefined, batchExec: undefined };
 let initPromise: Promise<Database> | null = null;
+
+/** Returns current db state synchronously. Check `db.conn` before using `exec`. */
+export function getDbSync(): Database {
+    return db;
+}
 
 /**
  * Initialize SQLite database connection
