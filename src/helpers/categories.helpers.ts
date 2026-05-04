@@ -18,7 +18,7 @@ export function getCategoryLabel(categoryId: CategoryId) {
 }
 
 /* Aggregate helpers */
-export function calculateCategoryTotal(categoryId: CategoryId, transactions: Transaction[]) {
+export function calculateCategoryTotal(categoryId: CategoryId, transactions: Transaction[] = []) {
     return Math.abs(transactions.reduce((acc, t) => {
         return t.categoryId === categoryId
             ? acc + t.amount

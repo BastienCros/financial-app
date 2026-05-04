@@ -1,0 +1,2 @@
+patchedDependencies:
+  '@sqlite.org/sqlite-wasm': patches/@sqlite.org__sqlite-wasm.patch

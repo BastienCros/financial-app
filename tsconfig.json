@@ -29,6 +29,8 @@
       "@/helpers/*": ["./src/helpers/*"],
       "@/utils": ["./src/utils"],
       "@/utils/*": ["./src/utils/*"],
+      "@/lib": ["./src/lib"],
+      "@/lib/*": ["./src/lib/*"],
       "@/types": ["./src/types"],
       "@/types/*": ["./src/types/*"],
       "@/data": ["./src/data"],
