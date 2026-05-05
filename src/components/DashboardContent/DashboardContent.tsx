@@ -26,7 +26,7 @@ export default function DashboardContent() {
                 )}
             </header>
             <BalanceSummary month={effectiveMonth} />
-            <DashboardGrid className="grow" selectedMonth={effectiveMonth} />
+            <DashboardGrid selectedMonth={effectiveMonth} />
         </>
     );
 }
