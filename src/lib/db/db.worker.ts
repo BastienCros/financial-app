@@ -37,6 +37,7 @@ async function start(sqlite3: Sqlite3Static) {
      */
     function fn(input: ExecArgument) {
         const result = db.exec({
+            // TODO add row mode to uspport direct access (QueryContext) adn Drizzle ORM
             rowMode: "object",
             ...input,
         } as any);
@@ -103,6 +104,7 @@ async function start(sqlite3: Sqlite3Static) {
                         stmt.finalize();
                     }
                 }
+
                 e.ports[0].postMessage({
                     type: "BATCH_RESPONSE",
                     id: data.id, // Echo back ID

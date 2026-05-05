@@ -1,6 +1,7 @@
 import type { ExecOptions } from "@sqlite.org/sqlite-wasm";
 
-export type ExecArgument = Pick<ExecOptions, "bind" | "sql">;
+// TODO add row mode to uspport direct access (QueryContext) adn Drizzle ORM
+export type ExecArgument = Pick<ExecOptions, "bind" | "sql" | "rowMode">;
 export type Messages =
     | { type: "OpfsDb_not_found" }
     | { type: "OpfsDb_found" }
@@ -12,7 +13,7 @@ export type Messages =
     | { type: "BATCH_RESPONSE"; id: number; data: BidirectionalBatchResponse }
     | { type: "ERROR"; id: number; data: { type: "error"; error: string } };
 
-export type BidirectionalFunction = (input: ExecArgument) => Promise<unknown>;
+export type BidirectionalFunction = (input: ExecArgument) => Promise<unknown[]>;
 export type BidirectionalBatchResponse =
     | { type: "success" }
     | { type: "error"; message: string };

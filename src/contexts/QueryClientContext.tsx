@@ -7,7 +7,7 @@ import {
     useState,
     useMemo,
 } from "react";
-import { initDb, getDbSync, type Database } from "@/lib/db";
+import { initDb, initORM, getDbSync, type Database } from "@/lib/db";
 import { formatToIsoString } from "@/helpers";
 import { mockTransactions } from "@/data";
 import { Transaction } from "@/types";
@@ -91,19 +91,19 @@ export function QueryClientProvider({ children }: Props) {
 
     // Init Database
     useEffect(() => {
-        initDb()
-            .then((db) => {
+        const init = async () => {
+            try {
+                const db = await initDb();
+                await initORM(db); // run migrations, init drizzle
                 // TODO Remove DB populating from dataset when CSV import is ready
-                return populateDb(db).then(() => db);
-            })
-            .then((db) => {
-                // Now Database object is ready to use
+                await populateDb(db);
                 setDb(db);
-            })
-            .catch((err) => {
+            } catch (err) {
                 console.error("Error initialising database ", err);
-                setErrorDb(err);
-            });
+                setErrorDb(err as Error);
+            }
+        };
+        init();
     }, []);
 
     useEffect(() => {

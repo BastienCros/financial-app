@@ -42,8 +42,20 @@ function sqliteAssetsPlugin() {
     };
 }
 
+// Mirrors next.config.ts Turbopack `raw` rule — Vite has no built-in .sql handler.
+function sqlPlugin() {
+    return {
+        name: "sql-loader",
+        transform(code: string, id: string) {
+            if (id.endsWith(".sql")) {
+                return `export default ${JSON.stringify(code)}`;
+            }
+        },
+    };
+}
+
 export default defineConfig({
-    plugins: [react(), sqliteAssetsPlugin()],
+    plugins: [react(), sqliteAssetsPlugin(), sqlPlugin()],
 
     resolve: {
         // Array form ensures specific prefixes are checked before the catch-all @
