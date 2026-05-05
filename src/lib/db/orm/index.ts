@@ -2,16 +2,16 @@
 // Call initORM(db) after initDb() resolves — runs pending migrations and wires the Drizzle instance.
 // Future: initORM will call initDb() internally and become the single app entry point.
 
+import type { Database, OrmInstance } from "@/lib/db/types";
 import { drizzle } from "drizzle-orm/sqlite-proxy";
 import { createSqliteDriver, createSqlBatchDriver } from "./sql-driver";
 import * as schema from "./schema";
-import type { Database } from "@/lib/db/types";
 
 import migration0 from "./migrations/0000_volatile_shatterstar.sql";
 
 const migrations = [{ version: 1, sql: migration0 }];
 
-let _orm: ReturnType<typeof drizzle> | undefined;
+let _orm: OrmInstance;
 let _db: Database | undefined;
 
 export async function initORM(database: Database) {
@@ -32,7 +32,11 @@ export async function initORM(database: Database) {
         }
     }
 
-    _orm = drizzle(createSqliteDriver(database), createSqlBatchDriver(database), { schema });
+    _orm = drizzle(
+        createSqliteDriver(database),
+        createSqlBatchDriver(database),
+        { schema },
+    );
     _db = database;
     return;
 }
@@ -52,7 +56,8 @@ export async function bulkInsert<T extends Record<string, unknown>>(
 ): Promise<void> {
     if (rows.length === 0) return;
 
-    if (!_orm || !_db) throw new Error("ORM not initialised — call initORM first");
+    if (!_orm || !_db)
+        throw new Error("ORM not initialised — call initORM first");
     if (!_db.batchExec) throw new Error("Database not initialised");
 
     const { sql } = _orm.insert(table).values(rows[0]).toSQL();

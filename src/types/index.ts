@@ -1,5 +1,5 @@
 export interface Transaction {
-  id: string;
+  id: number;
   date: string;        // ISO string: "2025-10-31"
   description: string; // what you show in the list
   categoryId: CategoryId;

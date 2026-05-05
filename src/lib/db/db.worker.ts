@@ -69,7 +69,7 @@ async function start(sqlite3: Sqlite3Static) {
                 } catch (err: unknown) {
                     const message = (err as Error)?.message ?? String(err);
                     e.ports[0].postMessage({
-                        type: "error",
+                        type: "ERROR",
                         id: data.id,
                         data: { type: "error", error: message },
                     });
