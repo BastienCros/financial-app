@@ -7,7 +7,11 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 export function Button({ children, className, ...props }: ButtonProps) {
     return (
-        <button className={cx(styles.button, className)} {...props}>
+        <button
+            className={cx(styles.button, className)}
+            type="button"
+            {...props}
+        >
             {children}
         </button>
     );
