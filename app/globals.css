@@ -14,6 +14,11 @@
   
   --success: #538983;
   --error: #c94736;
+
+  /* Semantic primary */
+  --primary:    var(--green);
+  --primary-90: color-mix(in srgb, var(--primary) 90%, black); /* hover */
+  --primary-75: color-mix(in srgb, var(--primary) 75%, black); /* pressed */
 }
 
 @theme {
@@ -29,6 +34,9 @@
   --color-foreground: var(--foreground);
   --color-success: var(--success);
   --color-error: var(--error);
+  --color-primary: var(--primary);
+  --color-primary-90: var(--primary-90);
+  --color-primary-75: var(--primary-75);
 
   /* Surface/foreground */
   --color-fg: var(--foreground);
