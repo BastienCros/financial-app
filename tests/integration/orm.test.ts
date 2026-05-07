@@ -118,7 +118,7 @@ describe("driver method: all", () => {
             .from(transactions)
             .where(eq(transactions.categoryId, "food"));
 
-        console.log("[all:where] drizzle result:", rows);
+        console.log("[all|where] drizzle result:", rows);
         expect(rows).toHaveLength(1);
         expect(rows[0].description).toBe("Coffee");
     });
@@ -421,7 +421,7 @@ describe("query patterns", () => {
                 expenses: sql<number>`SUM(CASE WHEN ${transactions.amount} < 0 THEN ABS(${transactions.amount}) ELSE 0 END)`,
             })
             .from(transactions);
-        console.log("[query:aggregation] row:", row);
+        console.log("[query|aggregation] row:", row);
         expect(row.balance).toBe(300);
         expect(row.income).toBe(500);
         expect(row.expenses).toBe(200);

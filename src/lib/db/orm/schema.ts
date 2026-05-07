@@ -21,7 +21,7 @@ import {
 } from "drizzle-orm/sqlite-core";
 
 const isoDate = customType<{ data: string; driverData: string }>({
-    dataType: () => "TEXT",
+    dataType: () => "text",
     toDriver: (value) => {
         // Normalize to ISO format
         if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(value))

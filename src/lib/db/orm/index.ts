@@ -9,6 +9,9 @@ import * as schema from "./schema";
 
 import migration0 from "./migrations/0000_volatile_shatterstar.sql";
 
+console.log("Mirgation", migration0);
+console.log("Mirgation Type", typeof migration0);
+
 const migrations = [{ version: 1, sql: migration0 }];
 
 let _orm: OrmInstance;
@@ -26,6 +29,7 @@ export async function initORM(database: Database) {
 
     for (const m of migrations) {
         if (m.version > version) {
+            console.log("Migration ", m.version, " query ", m.sql);
             await database.exec({ sql: m.sql });
             await database.exec({ sql: `PRAGMA user_version = ${m.version}` });
             version = m.version;

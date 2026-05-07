@@ -3,7 +3,7 @@ CREATE TABLE `transactions` (
 	`date` text NOT NULL,
 	`description` text NOT NULL,
 	`categoryId` text NOT NULL,
-	`amount` real,
+	`amount` real NOT NULL,
 	`created_at` text DEFAULT (CURRENT_TIMESTAMP)
 );
 --> statement-breakpoint

@@ -91,6 +91,7 @@ function setUpBidirectional(worker: Worker): {
             pendingPromises.set(id, { resolve, reject });
         });
 
+        console.log("DB lib - POST EXEC", exec.sql);
         channel.port1.postMessage({ type: "EXEC", id, exec } as Messages);
 
         return promise;

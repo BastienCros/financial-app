@@ -3,7 +3,8 @@ import { PreparedStatement } from "@sqlite.org/sqlite-wasm";
 // Environment detection for conditional logging
 const isDev = process.env.NODE_ENV === "development";
 // Enable Debug only if in developpement mode
-const SQL_DB_DEBUG = isDev && process.env.SQL_DB_DEBUG;
+// const SQL_DB_DEBUG = isDev && process.env.SQL_DB_DEBUG;
+const SQL_DB_DEBUG = true;
 
 const SQL_DB_FLAGS: string = `c${SQL_DB_DEBUG ? "t" : ""}`;
 
@@ -36,11 +37,13 @@ async function start(sqlite3: Sqlite3Static) {
      * This is the preferred format for TypeScript type safety
      */
     function fn(input: ExecArgument) {
+        console.log("EXEC query: ", input.sql);
         const result = db.exec({
             // TODO add row mode to uspport direct access (QueryContext) adn Drizzle ORM
             rowMode: "object",
             ...input,
         } as any);
+        console.log("EXEC result: ", result);
 
         return result as object;
     }
@@ -61,12 +64,14 @@ async function start(sqlite3: Sqlite3Static) {
             if (data.type === "EXEC") {
                 try {
                     const response = fn(data.exec);
+                    console.log("exec response", response);
                     e.ports[0].postMessage({
                         type: "EXEC_RESPONSE",
                         id: data.id, // Echo back ID
                         data: response,
                     });
                 } catch (err: unknown) {
+                    console.warn("exec error", err);
                     const message = (err as Error)?.message ?? String(err);
                     e.ports[0].postMessage({
                         type: "ERROR",
