@@ -118,6 +118,7 @@ export default defineConfig({
         browser: {
             enabled: true,
             headless: true,
+            detailsPanelPosition: "bottom",
             provider: playwright(),
             instances: [{ browser: "chromium" }],
         },
