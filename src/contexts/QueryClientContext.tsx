@@ -76,7 +76,14 @@ async function populateDb() {
 
 export function QueryClientProvider({ children }: Props) {
     const [invalidations, setInvalidations] = useState<Invalidations>({});
-    const [orm, setOrm] = useState<OrmInstance>(undefined);
+    const [orm, setOrm] = useState<OrmInstance>(() => {
+        try {
+            return getOrm();
+        } catch {
+            // ORM not yet initialized — useEffect will run the full async init
+            return undefined;
+        }
+    });
     const [errorDb, setErrorDb] = useState<Error | null>(null);
 
     const invalidate = useCallback((key: string) => {
@@ -90,17 +97,21 @@ export function QueryClientProvider({ children }: Props) {
     useEffect(() => {
         const init = async () => {
             try {
-                const db = await initDb();
-                await initORM(db);
+                if (!orm) {
+                    const db = await initDb();
+                    await initORM(db);
+                    setOrm(getOrm());
+                }
                 // TODO Remove DB populating from dataset when CSV import is ready
                 await populateDb();
-                setOrm(getOrm());
             } catch (err) {
                 console.error("Error initialising database ", err);
                 setErrorDb(err as Error);
             }
         };
         init();
+        // orm intentionally captured at mount time — we only want to init once
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
