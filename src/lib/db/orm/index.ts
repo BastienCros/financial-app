@@ -7,7 +7,7 @@ import { drizzle } from "drizzle-orm/sqlite-proxy";
 import { createSqliteDriver, createSqlBatchDriver } from "./sql-driver";
 import * as schema from "./schema";
 
-import migration0 from "./migrations/0000_volatile_shatterstar.sql";
+import migration0 from "./migrations/0000_nappy_cable.sql";
 
 console.log("Mirgation", migration0);
 console.log("Mirgation Type", typeof migration0);
