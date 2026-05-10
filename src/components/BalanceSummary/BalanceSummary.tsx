@@ -66,9 +66,7 @@ interface BalanceSummaryProps {
 }
 
 function BalanceSummary({ month }: BalanceSummaryProps) {
-    const { balance, income, expenses, loading, error } = useMonthStats(
-        month ?? "",
-    );
+    const { balance, income, expenses, loading, error } = useMonthStats(month);
 
     if (!month) return <BalanceSummarySkeleton />;
     if (loading) return <BalanceSummarySkeleton loading />;

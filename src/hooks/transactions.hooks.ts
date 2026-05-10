@@ -1,11 +1,30 @@
 import { useCallback } from "react";
 import { Transaction } from "@/types";
 import { formatToIsoString } from "@/helpers";
+import { bulkInsert } from "@/lib/db";
+import { transactions } from "@/lib/db/orm/schema";
+import { and, desc, gte, lt, sql, AnyColumn } from "drizzle-orm";
 import { useMutation, useQuery } from "./useQuery.hooks";
 
 // Invalidation key - all transaction queries share this key
 // When invalidate("transactions") is called, all hooks using this key re-run
 const KEY = "transactions";
+
+/* Local Helper */
+
+// Get start and next months in ISO format
+function getMonthBounds(monthStr: string) {
+    const start = `${monthStr}-01T00:00:00.000Z`;
+    const [year, m] = monthStr.split("-").map(Number);
+    const end = new Date(Date.UTC(year, m, 1)).toISOString();
+
+    return { start, end };
+}
+
+// Check if data is in month range
+const isWithinMonth = (col: AnyColumn, start: string, end: string) => {
+    return and(gte(col, start), lt(col, end));
+};
 
 /* ============================================
    QUERY HOOKS
@@ -13,106 +32,103 @@ const KEY = "transactions";
 
 /**
  * Get transactions sorted by date (newest first) with optional limit
- * LIMIT -1 is SQLite syntax for "no limit"
  */
 export function useTransactionsGetSortedByDate(limit?: number) {
-    const sql = `SELECT * FROM transactions ORDER BY date DESC LIMIT ?`;
-    const args = limit ?? -1;
-
-    const { data, loading, error } = useQuery<Transaction[]>(KEY, sql, [args]);
-
-    return {
-        data,
-        loading,
-        error,
-    };
+    return useQuery<Transaction[]>(
+        KEY,
+        (orm) => {
+            const q = orm
+                .select()
+                .from(transactions)
+                .orderBy(desc(transactions.date));
+            return (limit !== undefined ? q.limit(limit) : q) as Promise<
+                Transaction[]
+            >;
+        },
+        [limit],
+    );
 }
 
 /**
  * Get all unique months that have transactions
  * Returns array of month strings in "YYYY-MM" format
- *
- * Type transformation:
- * - SQL returns: [{month: "2024-12"}, {month: "2024-11"}]
- * - Extracted to: ["2024-12", "2024-11"]
+ * Note: limit default to 10 (we rarely need to display more than 10 months)
  */
-type AvalaibleMonth = { month: string };
-export function useAvailableMonths(limit?: number) {
-    const sql = `
-        SELECT DISTINCT strftime('%Y-%m', date) as month
-        FROM transactions
-        ORDER BY month DESC
-        LIMIT ?
-    `;
-    const args = limit ?? -1;
+export function useAvailableMonths(limit: number = 10) {
+    const { data, loading, error } = useQuery<string[]>(
+        KEY,
+        async (orm) => {
+            const rows = await orm
+                .selectDistinct({
+                    month: sql<string>`strftime('%Y-%m', ${transactions.date})`,
+                })
+                .from(transactions)
+                // Referencing the result of the first column
+                .orderBy(sql`1 DESC`)
+                .limit(limit);
 
-    const { data, loading, error } = useQuery<AvalaibleMonth[]>(KEY, sql, [
-        args,
-    ]);
+            return rows.map((r) => r.month);
+        },
+        [limit],
+    );
 
-    // Extract month strings from objects
-    const months = data?.map((row) => row.month) ?? [];
-
-    return {
-        months,
-        loading,
-        error,
-    };
+    const months = data ?? [];
+    return { months, loading, error };
 }
 
 /**
  * Get all transactions for a specific month
  */
-export function useMonthTransactions(month: string) {
-    const sql = `
-        SELECT *
-        FROM transactions
-        WHERE strftime('%Y-%m', date) = ?
-        ORDER BY date DESC
-    `;
+export function useMonthTransactions(month: string | null) {
+    return useQuery<Transaction[]>(
+        KEY,
+        async (orm) => {
+            if (!month) return [];
+            const { start, end } = getMonthBounds(month);
 
-    const { data, loading, error } = useQuery<Transaction[]>(KEY, sql, [month]);
-
-    return {
-        data,
-        loading,
-        error,
-    };
+            return await orm
+                .select()
+                .from(transactions)
+                .where(isWithinMonth(transactions.date, start, end))
+                .orderBy(desc(transactions.date));
+        },
+        [month],
+    );
 }
 
 /**
  * Get aggregated statistics for a specific month
- *
- * SQL aggregations return single row wrapped in array: [{balance: 100, income: 500, expenses: 400}]
- * Extracted the first element with data?.[0]
  */
 type MonthStats = { balance: number; income: number; expenses: number };
 
-export function useMonthStats(month: string) {
-    const sql = `
-        SELECT
-            SUM(amount) as balance,
-            SUM(CASE WHEN amount > 0 THEN amount else 0 END) as income,
-            SUM(CASE WHEN amount < 0 THEN ABS(amount) else 0 END) as expenses
-        FROM transactions
-        WHERE strftime('%Y-%m', date) = ?
-    `;
+export function useMonthStats(month: string | null) {
+    const { data, loading, error } = useQuery<MonthStats | undefined>(
+        KEY,
+        async (orm) => {
+            if (!month) return undefined;
+            const { start, end } = getMonthBounds(month);
 
-    const { data, loading, error } = useQuery<MonthStats[]>(KEY, sql, [month]);
-    // Extract first (and only) row from aggregation result
-    const { balance, income, expenses } = data?.[0] ?? {
+            return (
+                await orm
+                    .select({
+                        balance: sql<number>`SUM(${transactions.amount})`,
+                        income: sql<number>`SUM(CASE WHEN ${transactions.amount} > 0 THEN ${transactions.amount} ELSE 0 END)`,
+                        expenses: sql<number>`SUM(CASE WHEN ${transactions.amount} < 0 THEN ABS(${transactions.amount}) ELSE 0 END)`,
+                    })
+                    .from(transactions)
+                    .where(isWithinMonth(transactions.date, start, end))
+            )[0];
+        },
+        [month],
+    );
+
+    const { balance, income, expenses } = data ?? {
         balance: 0,
         income: 0,
         expenses: 0,
     };
 
-    return {
-        balance,
-        income,
-        expenses,
-        loading,
-        error,
-    };
+    return { balance, income, expenses, loading, error };
 }
 
 /* ============================================
@@ -126,22 +142,19 @@ export function useMonthStats(month: string) {
  *   - Multiple: mutate([tx1, tx2, tx3])
  */
 export function useAddTransactions() {
-    // Memoize to prevent mutate function recreation on every render
-    const prepareParams = useCallback(
-        (t: Transaction) => [
-            formatToIsoString(t.date),
-            t.description,
-            t.categoryId,
-            t.amount,
-        ],
+    const insertFn = useCallback(
+        (data: Transaction[]) =>
+            bulkInsert(
+                transactions,
+                data.map(({ date, description, categoryId, amount }) => ({
+                    date: formatToIsoString(date),
+                    description,
+                    categoryId,
+                    amount,
+                })),
+            ),
         [],
     );
 
-    const { mutate, loading, error } = useMutation<Transaction>(
-        KEY,
-        `INSERT INTO transactions (date, description, categoryId, amount) VALUES (?,?,?,?)`,
-        prepareParams,
-    );
-
-    return { mutate, loading, error };
+    return useMutation<Transaction>(KEY, insertFn);
 }

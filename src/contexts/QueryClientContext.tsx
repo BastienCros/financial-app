@@ -7,10 +7,10 @@ import {
     useState,
     useMemo,
 } from "react";
-import { initDb, getDbSync, type Database } from "@/lib/db";
+import { initDb, initORM, getOrm, bulkInsert, OrmInstance } from "@/lib/db";
+import { transactions as transactionsTable } from "@/lib/db/orm/schema";
 import { formatToIsoString } from "@/helpers";
 import { mockTransactions } from "@/data";
-import { Transaction } from "@/types";
 
 /**
  * Invalidation System:
@@ -24,7 +24,7 @@ import { Transaction } from "@/types";
 type Invalidations = Record<string, number>;
 
 const QueryClientContext = createContext<{
-    db: Database;
+    orm: OrmInstance;
     invalidations: Invalidations;
     invalidate: (key: string) => void;
     errorDb: Error | null;
@@ -38,48 +38,52 @@ let isPopulating = false;
 
 // TODO Intentionally runs in production: no CSV import yet (BAB-11), so mock data is the only
 // way to seed the DB. Once CSV import is live, this moves to dev-only.
-async function populateDb(db: Database) {
-    if (db.conn !== "opfs")
-        throw new Error("Error populating database: wrong state: " + db.conn);
-    if (!db.batchExec || !db.exec)
-        throw new Error("Error populating database: wrong setup");
-
-    // Check lock first
+async function populateDb() {
     if (isPopulating) {
         console.log("Already populating, skipping");
-        return Promise.resolve();
+        return;
     }
 
-    isPopulating = true; // Set lock
+    isPopulating = true;
 
     try {
-        const result = (await db.exec({
-            sql: "SELECT * FROM transactions LIMIT 1",
-        })) as Transaction[];
+        const existing = await getOrm()
+            .select()
+            .from(transactionsTable)
+            .limit(1);
 
-        if (result.length > 0) {
+        if (existing.length > 0) {
             console.log("Transactions DB already created / skip populating");
-            return Promise.resolve();
+            return;
         }
 
         console.log("Populating database with mock data...");
-        return db.batchExec(
-            `INSERT INTO transactions (date, description, categoryId, amount) VALUES (?,?,?,?)`,
-            mockTransactions.map((t) => [
-                formatToIsoString(t.date),
-                t.description,
-                t.categoryId,
-                t.amount,
-            ]),
+        await bulkInsert(
+            transactionsTable,
+            mockTransactions.map(
+                ({ date, description, categoryId, amount }) => ({
+                    date: formatToIsoString(date),
+                    description,
+                    categoryId,
+                    amount,
+                }),
+            ),
         );
     } finally {
-        isPopulating = false; // Release lock
+        isPopulating = false;
     }
 }
 
 export function QueryClientProvider({ children }: Props) {
     const [invalidations, setInvalidations] = useState<Invalidations>({});
-    const [db, setDb] = useState<Database>(() => getDbSync());
+    const [orm, setOrm] = useState<OrmInstance>(() => {
+        try {
+            return getOrm();
+        } catch {
+            // ORM not yet initialized — useEffect will run the full async init
+            return undefined;
+        }
+    });
     const [errorDb, setErrorDb] = useState<Error | null>(null);
 
     const invalidate = useCallback((key: string) => {
@@ -91,43 +95,47 @@ export function QueryClientProvider({ children }: Props) {
 
     // Init Database
     useEffect(() => {
-        initDb()
-            .then((db) => {
+        const init = async () => {
+            try {
+                if (!orm) {
+                    const db = await initDb();
+                    await initORM(db);
+                    setOrm(getOrm());
+                }
                 // TODO Remove DB populating from dataset when CSV import is ready
-                return populateDb(db).then(() => db);
-            })
-            .then((db) => {
-                // Now Database object is ready to use
-                setDb(db);
-            })
-            .catch((err) => {
+                await populateDb();
+            } catch (err) {
                 console.error("Error initialising database ", err);
-                setErrorDb(err);
-            });
+                setErrorDb(err as Error);
+            }
+        };
+        init();
+        // orm intentionally captured at mount time — we only want to init once
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
-        // Expose db to console for debugging (dev only)
+        // Expose orm to console for debugging (dev only)
         if (process.env.NODE_ENV === "development") {
-            (window as any).__db = db;
-            console.log("Database exposed as window.__db for debugging");
+            (window as any).__orm = orm;
+            console.log("ORM exposed as window.__orm for debugging");
         }
-    }, [db]);
+    }, [orm]);
 
     // Memoize context value to prevent unnecessary re-renders of consumers
     // Only updates when actual values change:
-    // - db: changes on reconnection
+    // - orm: changes once init completes
     // - invalidations: changes when invalidate() is called
     // - invalidate: stable (useCallback with empty deps)
     // - errorDb: changes on error
     const value = useMemo(
         () => ({
-            db,
+            orm,
             invalidations,
             invalidate,
             errorDb,
         }),
-        [db, invalidations, invalidate, errorDb],
+        [orm, invalidations, invalidate, errorDb],
     );
 
     return (

@@ -42,8 +42,20 @@ function sqliteAssetsPlugin() {
     };
 }
 
+// Mirrors next.config.ts Turbopack `raw` rule — Vite has no built-in .sql handler.
+function sqlPlugin() {
+    return {
+        name: "sql-loader",
+        transform(code: string, id: string) {
+            if (id.endsWith(".sql")) {
+                return `export default ${JSON.stringify(code)}`;
+            }
+        },
+    };
+}
+
 export default defineConfig({
-    plugins: [react(), sqliteAssetsPlugin()],
+    plugins: [react(), sqliteAssetsPlugin(), sqlPlugin()],
 
     resolve: {
         // Array form ensures specific prefixes are checked before the catch-all @
@@ -88,7 +100,7 @@ export default defineConfig({
     // running any code. entries adds the worker file to the startup scan so Vite
     // discovers the dep before any test runs (preventing a mid-run reload).
     optimizeDeps: {
-        entries: ["src/lib/db/db.worker.ts", "src/tests/**/*.tsx"],
+        entries: ["src/lib/db/db.worker.ts", "tests/**/*.tsx"],
         include: ["@sqlite.org/sqlite-wasm"],
     },
 
@@ -102,10 +114,11 @@ export default defineConfig({
     },
 
     test: {
-        setupFiles: ["./src/tests/setup.ts"],
+        setupFiles: ["./tests/setup.ts"],
         browser: {
             enabled: true,
             headless: true,
+            detailsPanelPosition: "bottom",
             provider: playwright(),
             instances: [{ browser: "chromium" }],
         },

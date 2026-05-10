@@ -9,9 +9,10 @@ import {
     useAddTransactions,
     useMonthTransactions,
     useMonthStats,
+    useAvailableMonths,
 } from "@/hooks/transactions.hooks";
-import { useQuery, useMutation } from "@/hooks/useQuery.hooks";
-import { getDb } from "../setup";
+import { useQuery } from "@/hooks/useQuery.hooks";
+import { getDb, getOrmObject } from "../setup";
 
 // Prevent populateDb from seeding mock data — each test manages its own fixtures
 vi.mock("@/data", () => ({ mockTransactions: [] }));
@@ -53,6 +54,7 @@ function txParams(t: Transaction): [string, string, string, number] {
 beforeAll(async () => {
     // Warm up database before test
     await getDb();
+    await getOrmObject();
 });
 
 beforeEach(async () => {
@@ -103,10 +105,15 @@ describe("query behavior", () => {
         );
     });
 
-    // TODO BAB-28 error case need to  be handled:
-    it.todo("EXEC error sets error state", async () => {
+    // TODO BAB-28: error case needs to be handled
+    // Error propagation infrastructure is in place (sql-driver re-throws, useQuery catches).
+    // A real test requires a way to inject a DB-level failure through the ORM interface.
+    it.todo("DB-level query error surfaces in error state", async () => {
         const { result } = renderHook(
-            () => useQuery("transactions", "INVALID SQL $$$$"),
+            () =>
+                useQuery("transactions", async (_orm) => {
+                    throw new Error("simulated");
+                }),
             { wrapper },
         );
         await waitFor(() => expect(result.current.error).not.toBe(""));
@@ -126,9 +133,54 @@ describe("query behavior", () => {
         await waitFor(() => {
             expect(result.current.loading).toBe(false);
             expect(result.current.balance).toBe(300);
+            expect(result.current.income).toBe(500);
+            expect(result.current.expenses).toBe(200);
         });
-        expect(result.current.income).toBe(500);
-        expect(result.current.expenses).toBe(200);
+    });
+});
+
+// ============================================================
+// useAvailableMonths
+// ============================================================
+
+describe("useAvailableMonths", () => {
+    it("returns [] when no transactions exist", async () => {
+        const { result } = renderHook(() => useAvailableMonths(), { wrapper });
+        await waitFor(() => {
+            expect(result.current.loading).toBe(false);
+            expect(result.current.months).toEqual([]);
+            expect(result.current.error).toBe("");
+        });
+    });
+
+    it("returns distinct months sorted newest first", async () => {
+        const db = await getDb();
+        // tx1=Jan, tx2=Jan, tx3=Feb — two distinct months
+        await db.batchExec?.(INSERT_SQL, [
+            txParams(tx1),
+            txParams(tx2),
+            txParams(tx3),
+        ]);
+        const { result } = renderHook(() => useAvailableMonths(), { wrapper });
+        await waitFor(() =>
+            expect(result.current.months).toEqual(["2025-02", "2025-01"]),
+        );
+        expect(result.current.loading).toBe(false);
+    });
+
+    it("respects the limit parameter", async () => {
+        const db = await getDb();
+        await db.batchExec?.(INSERT_SQL, [
+            txParams(tx1),
+            txParams(tx2),
+            txParams(tx3),
+        ]);
+        const { result } = renderHook(() => useAvailableMonths(1), { wrapper });
+        await waitFor(() => {
+            expect(result.current.months).toHaveLength(1);
+            expect(result.current.months[0]).toBe("2025-02");
+        });
+        expect(result.current.loading).toBe(false);
     });
 });
 
@@ -201,71 +253,70 @@ describe("mutation → query cycle", () => {
 describe("error and atomicity", () => {
     // TODO BAB-28: DB rollback works and query data stays unchanged (both verified below),
     // but the mutation error is not surfaced at the React layer yet.
-    it.todo(
-        "mid-batch UNIQUE violation rolls back DB, keeps query data, and surfaces error",
-        async () => {
-            const db = await getDb();
-            await db.exec?.({
-                sql: "INSERT INTO transactions (date, description, categoryId, amount) VALUES (?,?,?,?)",
-                bind: txParams(tx1),
-            });
-
-            const { result } = renderHook(
-                () => ({
-                    list: useTransactionsGetSortedByDate(),
-                    add: useAddTransactions(),
-                }),
-                { wrapper },
-            );
-            await waitFor(() =>
-                expect(result.current.list.data).toHaveLength(1),
-            );
-
-            // tx1 duplicate as 3rd element — causes UNIQUE failure, rolling back tx2 and tx3 too
-            const duplicate: Transaction = { ...tx1, id: "99" };
-            await act(async () => {
-                await result.current.add.mutate([tx2, tx3, duplicate]);
-            });
-
-            await waitFor(() => expect(result.current.add.loading).toBe(false));
-
-            // DB layer: entire batch rolled back
-            const rows = (await db.exec?.({
-                sql: "SELECT COUNT(*) as n FROM transactions",
-            })) as Array<{ n: number }>;
-            expect(rows[0].n).toBe(1);
-
-            // React layer: cached query data unchanged
-            expect(result.current.list.data).toHaveLength(1);
-
-            // TODO BAB-28: error format not defined yet
-            expect(result.current.add.error).not.toBe("");
-        },
-    );
-
-    it("BATCH prepare error writes 0 rows", async () => {
-        const { result } = renderHook(
-            () =>
-                useMutation(
-                    "transactions",
-                    "INSERT INTO nonexistent_table VALUES (?)",
-                    (x: number) => [x],
-                ),
-            { wrapper },
-        );
-        await waitFor(() => expect(result.current.loading).toBe(false));
-
-        await act(async () => {
-            await result.current.mutate([1]);
+    it.todo("mid-batch UNIQUE violation rolls back DB, keeps query data, and surfaces error", async () => {
+        const db = await getDb();
+        await db.exec?.({
+            sql: "INSERT INTO transactions (date, description, categoryId, amount) VALUES (?,?,?,?)",
+            bind: txParams(tx1),
         });
 
-        await waitFor(() => expect(result.current.error).not.toBe(""));
+        const { result } = renderHook(
+            () => ({
+                list: useTransactionsGetSortedByDate(),
+                add: useAddTransactions(),
+            }),
+            { wrapper },
+        );
+        await waitFor(() => expect(result.current.list.data).toHaveLength(1));
+
+        // tx1 duplicate as 3rd element — causes UNIQUE failure, rolling back tx2 and tx3 too
+        const duplicate: Transaction = { ...tx1, id: "99" };
+        await act(async () => {
+            await result.current.add.mutate([tx2, tx3, duplicate]);
+        });
+
+        await waitFor(() => expect(result.current.add.loading).toBe(false));
+
+        // DB layer: entire batch rolled back
+        const rows = (await db.exec?.({
+            sql: "SELECT COUNT(*) as n FROM transactions",
+        })) as Array<{ n: number }>;
+        expect(rows[0].n).toBe(1);
+
+        // React layer: cached query data unchanged
+        expect(result.current.list.data).toHaveLength(1);
+
+        // TODO BAB-28: error format not defined yet
+        expect(result.current.add.error).not.toBe("");
+    });
+
+    it("duplicate insert surfaces error and writes 0 additional rows", async () => {
+        const { result } = renderHook(
+            () => ({
+                list: useTransactionsGetSortedByDate(),
+                add: useAddTransactions(),
+            }),
+            { wrapper },
+        );
+        await waitFor(() => expect(result.current.list.data).toEqual([]));
+
+        await act(async () => {
+            await result.current.add.mutate([tx1]);
+        });
+        await waitFor(() => expect(result.current.list.data).toHaveLength(1));
+
+        await act(async () => {
+            await result.current.add.mutate([tx1]);
+        });
+        await waitFor(() => expect(result.current.add.loading).toBe(false));
+
+        expect(result.current.add.error).not.toBe("");
 
         const db = await getDb();
         const rows = (await db.exec?.({
             sql: "SELECT COUNT(*) as n FROM transactions",
         })) as Array<{ n: number }>;
-        expect(rows[0].n).toBe(0);
+        expect(rows[0].n).toBe(1);
     });
 });
 
@@ -308,9 +359,6 @@ describe("concurrency and robustness", () => {
                 wrapper,
             },
         );
-
-        await waitFor(() => expect(r1.current.add.loading).toBe(false));
-        await waitFor(() => expect(r2.current.add.loading).toBe(false));
 
         await act(async () => {
             await Promise.all([

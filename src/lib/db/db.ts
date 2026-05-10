@@ -87,7 +87,7 @@ function setUpBidirectional(worker: Worker): {
     async function bidirectional(exec: ExecArgument) {
         const id = requestId++;
 
-        const promise = new Promise((resolve, reject) => {
+        const promise = new Promise<unknown[]>((resolve, reject) => {
             pendingPromises.set(id, { resolve, reject });
         });
 
@@ -168,23 +168,6 @@ export async function initDb(): Promise<Database> {
             exec: execWorker,
             batchExec: execBatchWorker,
         };
-
-        // TODO: Schema Separation
-        // Currently creating transaction table in lib/db layer violates separation of concerns
-        // Solution: Move schema definitions to application initialization or migration system
-        // Keep lib/db generic and reusable across different applications
-        db.exec?.({
-            sql: `
-        CREATE TABLE IF NOT EXISTS transactions (
-            id INTEGER PRIMARY KEY,
-            date TIMESTAMP,
-            description TEXT NOT NULL,
-            categoryId  TEXT NOT NULL,
-            amount REAL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            UNIQUE(date, description, amount)
-        );`,
-        });
 
         return db;
     })();
