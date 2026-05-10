@@ -100,7 +100,7 @@ export default defineConfig({
     // running any code. entries adds the worker file to the startup scan so Vite
     // discovers the dep before any test runs (preventing a mid-run reload).
     optimizeDeps: {
-        entries: ["src/lib/db/db.worker.ts", "src/tests/**/*.tsx"],
+        entries: ["src/lib/db/db.worker.ts", "tests/**/*.tsx"],
         include: ["@sqlite.org/sqlite-wasm"],
     },
 
@@ -114,7 +114,7 @@ export default defineConfig({
     },
 
     test: {
-        setupFiles: ["./src/tests/setup.ts"],
+        setupFiles: ["./tests/setup.ts"],
         browser: {
             enabled: true,
             headless: true,
