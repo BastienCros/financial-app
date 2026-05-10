@@ -9,14 +9,11 @@ import * as schema from "./schema";
 
 import migration0 from "./migrations/0000_nappy_cable.sql";
 
-console.log("Mirgation", migration0);
-console.log("Mirgation Type", typeof migration0);
-
 const migrations = [{ version: 1, sql: migration0 }];
 
 let _orm: OrmInstance;
-let _db: Database | undefined;
 
+let _db: Database | undefined;
 export async function initORM(database: Database) {
     // TODO future: accept Promise<Database> (or call initDb() internally) so initORM is the single app entry point
     if (database.exec === undefined)
@@ -29,7 +26,6 @@ export async function initORM(database: Database) {
 
     for (const m of migrations) {
         if (m.version > version) {
-            console.log("Migration ", m.version, " query ", m.sql);
             await database.exec({ sql: m.sql });
             await database.exec({ sql: `PRAGMA user_version = ${m.version}` });
             version = m.version;

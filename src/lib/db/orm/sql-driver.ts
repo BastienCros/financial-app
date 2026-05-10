@@ -17,8 +17,6 @@ export function createSqliteDriver(database: Database): AsyncRemoteCallback {
     return async (sql, params, method) => {
         if (!database.exec) return { rows: [] };
 
-        console.log(`[SQL Driver] Run '${method}' - SQL - '${sql}'`);
-
         try {
             const result = await database.exec({
                 sql,
@@ -48,7 +46,6 @@ export function createSqlBatchDriver(
         const exec = database.exec;
         return Promise.all(
             batch.map(async ({ sql, params, method }) => {
-                console.log(`[SQL Driver] Batch '${method}' - SQL - '${sql}'`);
                 try {
                     const result = await exec({
                         sql,
