@@ -10,7 +10,7 @@ interface FieldLabelProps extends React.LabelHTMLAttributes<HTMLLabelElement> {
     children: React.ReactNode;
 }
 
-interface FieldDescriptionlProps extends React.HTMLAttributes<HTMLParagraphElement> {
+interface FieldDescriptionProps extends React.HTMLAttributes<HTMLParagraphElement> {
     children: React.ReactNode;
 }
 
@@ -32,7 +32,7 @@ function FieldDescription({
     children,
     className,
     ...props
-}: FieldDescriptionlProps) {
+}: FieldDescriptionProps) {
     return (
         <p className={cx(styles.description, className)} {...props}>
             {children}

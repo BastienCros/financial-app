@@ -53,7 +53,7 @@ function MainNavigation() {
                 <hr className="mx-10 my-5 h-[3px] bg-background rounded-full border-none" />
                 {/* Secondary navigation item */}
                 <NavActionItem
-                    icon={Import}
+                    renderIcon={(c) => <Import className={c} />}
                     label="Import CSV"
                     onClick={() => setCsvModalOpen(true)}
                 />
