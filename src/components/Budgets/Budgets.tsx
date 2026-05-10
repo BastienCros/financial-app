@@ -64,7 +64,7 @@ function Budgets({ className, selectedMonth }: BudgetsProps) {
         data: currentMonthTransactions,
         loading,
         error,
-    } = useMonthTransactions(selectedMonth ?? "");
+    } = useMonthTransactions(selectedMonth);
 
     const categorySpend = useMemo(() => {
         return budgetCategories

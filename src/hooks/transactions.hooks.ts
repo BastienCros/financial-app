@@ -13,7 +13,7 @@ const KEY = "transactions";
 /* Local Helper */
 
 // Get start and next months in ISO format
-export function getMonthBounds(monthStr: string) {
+function getMonthBounds(monthStr: string) {
     const start = `${monthStr}-01T00:00:00.000Z`;
     const [year, m] = monthStr.split("-").map(Number);
     const end = new Date(Date.UTC(year, m, 1)).toISOString();
@@ -22,7 +22,7 @@ export function getMonthBounds(monthStr: string) {
 }
 
 // Check if data is in month range
-export const isWithinMonth = (col: AnyColumn, start: string, end: string) => {
+const isWithinMonth = (col: AnyColumn, start: string, end: string) => {
     return and(gte(col, start), lt(col, end));
 };
 
@@ -79,10 +79,11 @@ export function useAvailableMonths(limit: number = 10) {
 /**
  * Get all transactions for a specific month
  */
-export function useMonthTransactions(month: string) {
+export function useMonthTransactions(month: string | null) {
     return useQuery<Transaction[]>(
         KEY,
         async (orm) => {
+            if (!month) return [];
             const { start, end } = getMonthBounds(month);
 
             return await orm
@@ -100,10 +101,11 @@ export function useMonthTransactions(month: string) {
  */
 type MonthStats = { balance: number; income: number; expenses: number };
 
-export function useMonthStats(month: string) {
+export function useMonthStats(month: string | null) {
     const { data, loading, error } = useQuery<MonthStats | undefined>(
         KEY,
         async (orm) => {
+            if (!month) return undefined;
             const { start, end } = getMonthBounds(month);
 
             return (
