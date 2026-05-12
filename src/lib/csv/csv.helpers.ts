@@ -23,7 +23,9 @@ export const findValues = (
 export const csvToTransaction = (
     row: Record<string, string>,
 ): Omit<Transaction, "id"> | undefined => {
-    const normalizedRow = row;
+    const normalizedRow = Object.fromEntries(
+        Object.entries(row).map(([k, v]) => [k.trim().toLowerCase(), v]),
+    );
 
     const date = normalizeDate(findValues(normalizedRow, "date")[0] ?? null);
     const description = findValues(normalizedRow, "description")[0] ?? "";
