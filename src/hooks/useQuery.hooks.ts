@@ -53,6 +53,7 @@ export function useMutation<T>(
             } catch (e) {
                 console.error("Error running mutation", e);
                 setError("Error running mutation " + JSON.stringify(e));
+                throw e;
             } finally {
                 setLoading(false);
             }

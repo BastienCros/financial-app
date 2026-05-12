@@ -6,9 +6,8 @@ import Button from "@/components/Button";
 import Spinner from "@/components/Spinner";
 import { Field, Input } from "@/components/Field";
 
-import useImportTransaction, {
-    ImportStatus,
-} from "./useImportTransaction.hooks";
+import { useImportTransaction } from "@/hooks";
+import type { ImportStatus } from "@/lib/csv";
 
 interface ImportCsvModalProps {
     open: boolean;

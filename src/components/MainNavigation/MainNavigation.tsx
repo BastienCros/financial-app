@@ -3,7 +3,8 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { ArrowBigLeftDash, Import } from "lucide-react";
 import SkipNavLink from "@/components/SkipNavLink";
-import ImportCsvModal from "@/components/ImportCsvModal";
+// TODO  BAB-48 Re-enable Import CSV action when context moved to Zustand store
+// import ImportCsvModal from "@/components/ImportCsvModal";
 import NavigationItem from "./NavigationItem";
 import NavActionItem from "./NavActionItem";
 import { NAV_ITEMS } from "./MainNavigation.constants";
@@ -16,7 +17,8 @@ import styles from "./MainNavigation.module.css";
 function MainNavigation() {
     const pathname = usePathname();
     const [isCollapsed, setIsCollapsed] = useState(false);
-    const [csvModalOpen, setCsvModalOpen] = useState(false);
+    // TODO  BAB-48 Re-enable Import CSV action when context moved to Zustand store
+    // const [csvModalOpen, setCsvModalOpen] = useState(false);
 
     return (
         <nav
@@ -55,13 +57,16 @@ function MainNavigation() {
                 <NavActionItem
                     renderIcon={(c) => <Import className={c} />}
                     label="Import CSV"
-                    onClick={() => setCsvModalOpen(true)}
+                    // TODO  BAB-48 Re-enable Import CSV action when context moved to Zustand store
+                    disabled={true}
+                    // onClick={() => setCsvModalOpen(true)}
                 />
             </ul>
-            <ImportCsvModal
+            {/* TODO  BAB-48 Re-enable Import CSV action when context moved to Zustand store*/}
+            {/*<ImportCsvModal
                 open={csvModalOpen}
                 onOpenChange={setCsvModalOpen}
-            />
+            />*/}
             <button
                 className={styles.collapseButton}
                 onClick={() => setIsCollapsed((prev) => !prev)}

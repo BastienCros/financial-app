@@ -45,22 +45,19 @@ You correctly identified these as related but independent. The architectural con
 
 ## File Picker
 
-Custom File Picker / Using modal and File input
+✅ Done: standard `<input type="file">` inside the import modal.
 
 Note: massive file may break thing, analyse shall be done to determinat maximu file size
 
 ## Parsing
 
-Complex action => let an optimized lib do the job
-De-facto is Papa Parse [See doc](https://react-papaparse.js.org/docs)
-Interesting feature is: can do pasring in worker (`worker: true`), critical ot import big csv file
-React version is required ? => no as File Import is custom
+✅ Done: PapaParse with `worker: true` (offloads parsing off main thread).
+React version is not required — using the vanilla library directly.
 
 
 ## Transformation layer
 
-Shall detect the field according to csv header, 
-BUT: dont trust blindly: Create a mapping object or use a fuzzy-matching logic to find the right columns regardless of capitalization.
+✅ Done: `SCHEMA_MAP` with case-insensitive key normalization (`normalizeRowKeys`).
 
 Idea: later, propose a preview of 5-10 rows to let user reveiw the mapping beetween csv header <=> transaction field
 
@@ -84,9 +81,9 @@ export interface Transaction {
 - **category**: the maaping to a specific category may be problematic
 - **amount**: may have IN and OUT amount ; shall be normalized
 
-At some point a preview of rendered mapping may be useful (specailly for categories)
+✅ Done: simple keyword mapping against personal CSV categories (`CATEGORY_MAP`).
 
-But first: do a simple match mapping with personnal csv (that got categories)
+At some point a preview of rendered mapping may be useful (especially for categories)
 
 ### Mapping object 
 The most simple: the idea is to map a few string that realte to the same field.
@@ -116,7 +113,7 @@ const transformed = rawData.map(row => {
 });
 ```
 
-#### The Fuzzing matching
+#### The Fuzzy matching
 
 More "smart" macth making, can handle type , etc. 
 Require a library like **Fuse.js**.
@@ -177,3 +174,41 @@ const CsvImporter = () => {
 
 export default CsvImporter;
 ```
+
+---
+
+## Decisions
+
+Small choices made during implementation that are worth tracking explicitly.
+
+### Error handling strategy: fail-safe per row
+
+Current decision: invalid rows are silently dropped, the import never aborts entirely.
+This applies at two levels:
+- **PapaParse row-level errors** (malformed quotes, field count mismatch): rows that generated a parse error are removed by index, the rest are processed normally.
+- **Transformation errors** (`csvToTransaction` returns `undefined`): rows that fail mapping are filtered out before the bulk insert.
+
+Open question: should the user be informed of how many rows were dropped, and why?
+
+### Per-field fallback behavior
+
+Each field has its own fallback strategy — the choice of what "missing or unrecognized value" means differs per field:
+
+| Field | Missing/unrecognized | Rationale |
+|---|---|---|
+| `date` | `null` → row rejected | A transaction without a date is not meaningful |
+| `category` | `"other"` → row kept | Losing categorization is acceptable, data is preserved |
+| `amount` | `0` → row kept | Awkward but acceptable for now; strategy not yet defined |
+
+Open question: is `amount: 0` a valid state or a silent data loss? Should rows with no resolvable amount be rejected like rows with no date?
+
+### Encoding
+
+CSV encoding is hardcoded to `ISO-8859-1` (French bank CSV format).
+Open question: auto-detect encoding using a library like `jschardet` for broader compatibility.
+
+### Outcome when all rows are filtered out
+
+If every row fails (parse error + transformation), the import resolves as `"success"` with nothing inserted.
+This is consistent with the fail-safe strategy but may be surprising to the user.
+Open question: distinguish between "import succeeded with N rows" and "import ran but nothing was saved".
