@@ -3,24 +3,23 @@ import Papa, { ParseResult } from "papaparse";
 import { csvToTransaction, ImportStatus } from "@/lib/csv";
 import { useAddTransactions } from "@/hooks/transactions.hooks";
 
-const useImportTransaction = (file: File | undefined) => {
+const useImportTransaction = () => {
     const [status, setStatus] = React.useState<ImportStatus>("idle");
     const { mutate } = useAddTransactions();
 
-    React.useEffect(() => {
-        if (!file) {
+    // Let user reset status (no sure if ok to do this)
+    const resetStatus = () => {
+        if (status === "error" || status === "success") {
             setStatus("idle");
-            return;
         }
+    };
 
-        let active = true;
+    const startProcessing = (file: File) => {
         setStatus("loading");
 
         const onComplete = async (
             result: ParseResult<Record<string, string>>,
         ) => {
-            if (!active) return;
-
             try {
                 console.log("Papa Parse - result", result);
 
@@ -53,13 +52,12 @@ const useImportTransaction = (file: File | undefined) => {
 
                 setStatus("success");
             } catch (err) {
-                if (active) {
-                    setStatus("error");
-                    console.error("File reading failed", err);
-                }
+                console.error("File reading failed", err);
+                setStatus("error");
             }
         };
 
+        // Not sure this is used in Papaparse with Worker mode - keep in case we may not use worker
         const onError = (error: Error, file: File) =>
             console.error("Error", error, file);
 
@@ -73,13 +71,10 @@ const useImportTransaction = (file: File | undefined) => {
             encoding: "ISO-8859-1",
         });
 
-        return () => {
-            // TODO: cancel Papa Parse worker on unmount
-            active = false;
-        };
-    }, [file, mutate]);
+        return;
+    };
 
-    return { status };
+    return { status, resetStatus, startProcessing };
 };
 
 export default useImportTransaction;

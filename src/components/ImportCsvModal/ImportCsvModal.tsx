@@ -4,7 +4,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { cx } from "@/utils";
 import Button from "@/components/Button";
 import Spinner from "@/components/Spinner";
-import { Field, Input } from "@/components/Field";
+import { FileUploader } from "@/components/Field";
 
 import { useImportTransaction } from "@/hooks";
 import type { ImportStatus } from "@/lib/csv";
@@ -12,13 +12,6 @@ import type { ImportStatus } from "@/lib/csv";
 interface ImportCsvModalProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-}
-
-interface FormElements extends HTMLFormControlsCollection {
-    csv: HTMLInputElement;
-}
-interface ImportFormElement extends HTMLFormElement {
-    readonly elements: FormElements;
 }
 
 function StatusDescription({ status }: { status: ImportStatus }) {
@@ -37,20 +30,25 @@ function StatusDescription({ status }: { status: ImportStatus }) {
 }
 
 function ImportCsvModal({ open, onOpenChange }: ImportCsvModalProps) {
-    const [file, setFile] = React.useState<File | undefined>(undefined);
-    const { status } = useImportTransaction(file);
+    const [file, setFile] = React.useState<File | null>(null);
+    const { status, resetStatus, startProcessing } = useImportTransaction();
     const isLoading = status === "loading";
 
-    const handleSubmit = (e: React.FormEvent<ImportFormElement>) => {
-        e.preventDefault();
-        const form = e.currentTarget;
+    const handleFileDrop = (file: File | null) => {
+        resetStatus();
+        setFile(file);
+    };
 
-        console.log("Submitted File:", form.elements.csv.files?.[0]?.name);
-        setFile(form.elements.csv.files?.[0]);
+    const handleSubmit = () => {
+        if (file && status === "idle") {
+            // Note: processing may continue even if modal is closed - acceptable but worth noting
+            startProcessing(file);
+        }
     };
 
     const handleOpenChange = (open: boolean) => {
-        if (!open) setFile(undefined);
+        if (!open) setFile(null);
+        resetStatus();
         onOpenChange(open);
     };
 
@@ -73,29 +71,26 @@ function ImportCsvModal({ open, onOpenChange }: ImportCsvModalProps) {
                     <Dialog.Description className="pb-3">
                         Import CSV file from your computer
                     </Dialog.Description>
-                    <form onSubmit={handleSubmit}>
-                        <Field>
-                            <Field.Label htmlFor="csv">CSV file</Field.Label>
-                            <Input
-                                id="csv"
-                                name="csv"
-                                type="file"
-                                accept=".csv, text/csv"
-                                aria-describedby="csv-desc"
-                                required
-                            />
-                            <Field.Description id="csv-desc">
-                                Select a CSV file to import
-                            </Field.Description>
-                        </Field>
+                    <div>
+                        <FileUploader
+                            id="csv-upload"
+                            accept=".csv, text/csv"
+                            label="Drop a CSV file here or click to upload"
+                            onFileDrop={handleFileDrop}
+                            required
+                        />
+
                         <div className="flow mt-2">
                             <StatusDescription status={status} />
-                            <Button type="submit" disabled={isLoading}>
+                            <Button
+                                onClick={handleSubmit}
+                                disabled={!file || isLoading}
+                            >
                                 {isLoading && <Spinner />}
                                 Import
                             </Button>
                         </div>
-                    </form>
+                    </div>
                 </Dialog.Content>
             </Dialog.Portal>
         </Dialog.Root>
