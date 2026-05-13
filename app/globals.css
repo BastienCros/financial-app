@@ -1,90 +1,105 @@
 @import "tailwindcss";
 
 :root {
-  /* Brand palette */
-  --green: #277c78;
-  --cyan: #82c9d7;
-  --navy: #626070;
-  --yellow: #f2cdac;
-  
-  /* Surface */
-  --background: rgb(238, 234, 230);
-  --surface: #ffffff;
-  --foreground: #201f24;
-  
-  --success: #538983;
-  --error: #c94736;
+    /* Brand palette */
+    --green: #277c78;
+    --cyan: #82c9d7;
+    --navy: #626070;
+    --yellow: #f2cdac;
+
+    /* Surface */
+    --background: rgb(238, 234, 230);
+    --surface: #ffffff;
+    --foreground: #201f24;
+
+    --success: #538983;
+    --error: #c94736;
+    --muted: var(--navy);
+    --muted-25: color-mix(in srgb, var(--muted) 25%, white); /* pressed */
+
+    /* Semantic primary */
+    --primary: var(--green);
+    --primary-90: color-mix(in srgb, var(--primary) 90%, black); /* hover */
+    --primary-75: color-mix(in srgb, var(--primary) 75%, black); /* pressed */
 }
 
 @theme {
-  /* Base color */
-  --color-green: var(--green);
-  --color-cyan: var(--cyan);
-  --color-navy: var(--navy);
-  --color-yellow: var(--yellow);
+    /* Base color */
+    --color-green: var(--green);
+    --color-cyan: var(--cyan);
+    --color-navy: var(--navy);
+    --color-yellow: var(--yellow);
 
-  /* Semantic */
-  --color-background: var(--background);
-  --color-surface: var(--surface);
-  --color-foreground: var(--foreground);
-  --color-success: var(--success);
-  --color-error: var(--error);
+    /* Semantic */
+    --color-background: var(--background);
+    --color-surface: var(--surface);
+    --color-foreground: var(--foreground);
+    --color-success: var(--success);
+    --color-error: var(--error);
+    --color-muted: var(--muted);
+    --color-primary: var(--primary);
+    --color-primary-90: var(--primary-90);
+    --color-primary-75: var(--primary-75);
 
-  /* Surface/foreground */
-  --color-fg: var(--foreground);
+    /* Surface/foreground */
+    --color-fg: var(--foreground);
 
-  /* Text colors */
-  --color-fg-subtle: #696868;
-  --color-on-dark: #ffffff;
+    /* Text colors */
+    --color-fg-subtle: #696868;
+    --color-on-dark: #ffffff;
 
-  /* Fonts */
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+    /* Fonts */
+    --font-sans: var(--font-geist-sans);
+    --font-mono: var(--font-geist-mono);
 
-  /* Define spacing for use as custom properties */
-  --spacing-2: calc(var(--spacing) * 2);
-  --spacing-3: calc(var(--spacing) * 3);
-  --spacing-4: calc(var(--spacing) * 4);
-  --spacing-5: calc(var(--spacing) * 5);
-  --spacing-6: calc(var(--spacing) * 6);
+    /* Define spacing for use as custom properties */
+    --spacing-2: calc(var(--spacing) * 2);
+    --spacing-3: calc(var(--spacing) * 3);
+    --spacing-4: calc(var(--spacing) * 4);
+    --spacing-5: calc(var(--spacing) * 5);
+    --spacing-6: calc(var(--spacing) * 6);
+
+    /* Animation  */
+    --animate-spin: spin 1250ms linear infinite;
 }
 
 @layer base {
-  body {
-    background: var(--color-background);
-    color: var(--color-foreground);
-  }
+    body {
+        background: var(--color-background);
+        color: var(--color-foreground);
+    }
 
-  h1 {
-    font-size: var(--text-3xl);
-    font-weight: var(--font-weight-extrabold);
-    line-height: var(--tw-leading);
-  }
+    h1 {
+        font-size: var(--text-3xl);
+        font-weight: var(--font-weight-extrabold);
+        line-height: var(--tw-leading);
+    }
 }
 
 @layer components {
-  .tw-card {
-    --card-surface: var(--color-surface);
-    --card-text: var(--color-foreground);
-    --card-padding-multiplier: 6;
+    .tw-card {
+        --card-surface: var(--color-surface);
+        --card-text: var(--color-foreground);
+        --card-padding-multiplier: 6;
 
-    color: var(--card-text);
-    background-color: var(--card-surface);
-    border-radius: var(--radius-xl);
-    padding: calc(var(--card-padding-multiplier) * var(--spacing));
-  }
+        color: var(--card-text);
+        background-color: var(--card-surface);
+        border-radius: var(--radius-xl);
+        padding: calc(var(--card-padding-multiplier) * var(--spacing));
+    }
 
-  .tw-card[data-variant="background"] {
-    --card-surface: var(--color-background);
-  }
+    .tw-card[data-variant="background"] {
+        --card-surface: var(--color-background);
+    }
 
-  .tw-card[data-variant="dark"] {
-    --card-surface: var(--color-foreground);
-    --card-text: var(--color-on-dark);
-  }
+    .tw-card[data-variant="dark"] {
+        --card-surface: var(--color-foreground);
+        --card-text: var(--color-on-dark);
+    }
 }
 
-/* Not used class for now - keep for reference */
-.flow > * + * {
-  margin-top: var(--flow-space, 1em);
+@layer components {
+    .flow > * + * {
+        margin-top: var(--flow-space, 1em);
+    }
 }

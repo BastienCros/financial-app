@@ -2,7 +2,6 @@ import type { ExecOptions } from "@sqlite.org/sqlite-wasm";
 import { SqliteRemoteDatabase } from "drizzle-orm/sqlite-proxy";
 import * as schema from "./orm/schema";
 
-// TODO add row mode to uspport direct access (QueryContext) adn Drizzle ORM
 export type ExecArgument = Pick<ExecOptions, "bind" | "sql" | "rowMode">;
 export type Messages =
     | { type: "OpfsDb_not_found" }

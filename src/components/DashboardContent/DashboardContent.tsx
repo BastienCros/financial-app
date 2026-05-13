@@ -1,14 +1,18 @@
 "use client";
 
 import { useState } from "react";
+import { PlusIcon } from "lucide-react";
 import BalanceSummary from "@/components/BalanceSummary";
 import DashboardGrid from "@/components/DashboardGrid";
 import MonthPicker from "@/components/MonthPicker";
+import Button from "@/components/Button";
+import ImportCsvModal from "@/components/ImportCsvModal";
 import { useAvailableMonths } from "@/hooks/transactions.hooks";
 
 export default function DashboardContent() {
     const { months } = useAvailableMonths();
     const [selectedMonth, setSelectedMonth] = useState<string | null>(null);
+    const [csvModalOpen, setCsvModalOpen] = useState(false);
 
     // Derive effective month: user selection or default to most recent
     const effectiveMonth =
@@ -16,17 +20,30 @@ export default function DashboardContent() {
 
     return (
         <>
-            <header className="w-full flex justify-between">
+            <header className="w-full flex justify-between items-center">
                 <h1>Overview</h1>
-                {months.length > 0 && (
-                    <MonthPicker
-                        currentMonth={effectiveMonth}
-                        setMonth={setSelectedMonth}
-                    />
-                )}
+                <div className="flex gap-6">
+                    {months.length > 0 && (
+                        <MonthPicker
+                            currentMonth={effectiveMonth}
+                            setMonth={setSelectedMonth}
+                        />
+                    )}
+                    <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setCsvModalOpen(true)}
+                    >
+                        <PlusIcon size={20} />
+                    </Button>
+                </div>
             </header>
             <BalanceSummary month={effectiveMonth} />
-            <DashboardGrid className="grow" selectedMonth={effectiveMonth} />
+            <DashboardGrid selectedMonth={effectiveMonth} />
+            <ImportCsvModal
+                open={csvModalOpen}
+                onOpenChange={setCsvModalOpen}
+            />
         </>
     );
 }

@@ -53,7 +53,7 @@ function BalanceCard({
                 data-variant={variant}
             >
                 <h3>{title}</h3>
-                <p className="font-mono text-3xl font-bold">
+                <p className="font-mono text-2xl font-bold">
                     {loading ? "Loading..." : formatCurrency(amount)}
                 </p>
             </div>

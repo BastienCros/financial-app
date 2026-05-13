@@ -4,157 +4,165 @@
    MOBILE: Hidden on small screens
    ============================================ */
 .container {
-  display: none;
+    display: none;
 }
 
 /* ============================================
    DESKTOP
    ============================================ */
 @media (width >= 80rem /* 1280px */) {
-  /* ------------------------------------------
+    /* ------------------------------------------
      LAYOUT: Container & List Structure
      ------------------------------------------ */
-  .container {
-    width: var(--sidebar-width);
-    display: flex;
-    flex-direction: column;
-    gap: calc(14 * var(--spacing));
-    padding-block: calc(7 * var(--spacing));
-    background: var(--color-foreground);
-    color: var(--color-on-dark);
-    border-radius: 0 var(--radius-2xl) var(--radius-2xl) 0;
-    overflow: hidden;
-    transition: width 500ms ease-in-out;
-  }
+    .container {
+        flex-shrink: 0;
 
-  .list {
-    display: flex;
-    flex-direction: column;
-    padding-block: calc(20 * var(--spacing));
-  }
+        position: sticky;
+        top: 0;
+        height: 100vh;
 
-  /* ------------------------------------------
+        width: var(--sidebar-width);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: calc(14 * var(--spacing));
+        padding-block: calc(7 * var(--spacing));
+        background: var(--color-foreground);
+        color: var(--color-on-dark);
+        border-radius: 0 var(--radius-2xl) var(--radius-2xl) 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+        transition: width 500ms ease-in-out;
+    }
+
+    .list {
+        display: flex;
+        flex-direction: column;
+        padding-block: calc(20 * var(--spacing));
+    }
+
+    /* ------------------------------------------
      LOGO: Heading & Text
      ------------------------------------------ */
-  .container h2 span {
-    transition: opacity;
-    transition-duration: 500ms;
-    transition-delay: 100ms;
-  }
+    .container h2 span {
+        transition: opacity;
+        transition-duration: 500ms;
+        transition-delay: 100ms;
+    }
 
-  /* ------------------------------------------
+    /* ------------------------------------------
      SHARED ELEMENTS: Icons & Labels
      ------------------------------------------ */
-  .icon {
-    width: 24px; /* Fixed size */
-    height: 24px;
-    flex-shrink: 0; /* Prevent shrinking */
-  }
-
-  .label {
-    transition: opacity;
-    transition-duration: 500ms;
-    transition-delay: 100ms;
-    overflow: hidden;
-    text-overflow: clip;
-    white-space: nowrap;
-  }
-
-  /* ------------------------------------------
-     NAVIGATION ITEMS: Links & States
-     ------------------------------------------ */
-  .item {
-    --item-color: green;
-
-    position: relative;
-    display: flex;
-    align-items: center;
-    gap: calc(8 * var(--spacing));
-    padding-block: calc(3 * var(--spacing));
-    padding-inline-start: calc(7 * var(--spacing));
-    margin-inline-end: calc(2 * var(--spacing));
-    font-size: var(--text-mg);
-    font-weight: var(--font-weight-semibold);
-    color: var(--color-background);
-    opacity: 0.8;
-    border-radius: 0 var(--radius-2xl) var(--radius-2xl) 0;
-  }
-
-  .item[aria-current="page"] {
-    pointer-events: none; /* Avoid clicking on current page */
-    background-color: var(--color-background);
-    color: var(--color-foreground);
-    opacity: 1;
-
-    & svg {
-      color: var(--item-color);
-    }
-
-    &::before {
-      position: absolute;
-      top: 0;
-      left: 0;
-      bottom: 0;
-      content: "";
-      width: 4px;
-      background-color: var(--item-color);
-    }
-  }
-
-  .item:hover {
-    opacity: 1;
-  }
-
-  .item[aria-disabled="true"] {
-    pointer-events: none;
-    cursor: default;
-    opacity: 0.5;
-  }
-
-  /* ------------------------------------------
-     COLLAPSE BUTTON: Toggle Control
-     ------------------------------------------ */
-  .collapseButton {
-    display: flex;
-    gap: calc(5 * var(--spacing));
-    padding-block: calc(3 * var(--spacing));
-    padding-inline: calc(7 * var(--spacing)) 0;
-    opacity: 0.8;
-    cursor: pointer;
-  }
-
-  .collapseButton:hover {
-    opacity: 1;
-  }
-
-  /* ------------------------------------------
-     COLLAPSED STATE: All width/spacing overrides
-     ------------------------------------------ */
-  /* Handle collapsed state */
-  .container[data-collapsed="true"] {
-    min-width: 0;
-    width: var(--sidebar-width-icon);
-
-    h2 span:not(.logo) {
-      opacity: 0;
-      transition-delay: 0ms; /* No delay when hiding */
+    .icon {
+        width: 24px; /* Fixed size */
+        height: 24px;
+        flex-shrink: 0; /* Prevent shrinking */
     }
 
     .label {
-      opacity: 0;
-      transition-delay: 0ms; /* No delay when hiding */
+        transition: opacity;
+        transition-duration: 500ms;
+        transition-delay: 100ms;
+        overflow: hidden;
+        text-overflow: clip;
+        white-space: nowrap;
     }
 
-    .collapseButton svg {
-      transform: rotate(180deg);
+    /* ------------------------------------------
+     NAVIGATION ITEMS: Links & States
+     ------------------------------------------ */
+    .item {
+        --item-color: green;
+
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: calc(8 * var(--spacing));
+        padding-block: calc(3 * var(--spacing));
+        padding-inline-start: calc(7 * var(--spacing));
+        margin-inline-end: calc(2 * var(--spacing));
+        font-size: var(--text-mg);
+        font-weight: var(--font-weight-semibold);
+        color: var(--color-background);
+        opacity: 0.8;
+        border-radius: 0 var(--radius-2xl) var(--radius-2xl) 0;
     }
-  }
+
+    .item[aria-current="page"] {
+        pointer-events: none; /* Avoid clicking on current page */
+        background-color: var(--color-background);
+        color: var(--color-foreground);
+        opacity: 1;
+
+        & svg {
+            color: var(--item-color);
+        }
+
+        &::before {
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            content: "";
+            width: 4px;
+            background-color: var(--item-color);
+        }
+    }
+
+    .item:hover {
+        opacity: 1;
+    }
+
+    .item[aria-disabled="true"] {
+        pointer-events: none;
+        cursor: default;
+        opacity: 0.5;
+    }
+
+    /* ------------------------------------------
+     COLLAPSE BUTTON: Toggle Control
+     ------------------------------------------ */
+    .collapseButton {
+        display: flex;
+        gap: calc(5 * var(--spacing));
+        padding-block: calc(3 * var(--spacing));
+        padding-inline: calc(7 * var(--spacing)) 0;
+        opacity: 0.8;
+        cursor: pointer;
+    }
+
+    .collapseButton:hover {
+        opacity: 1;
+    }
+
+    /* ------------------------------------------
+     COLLAPSED STATE: All width/spacing overrides
+     ------------------------------------------ */
+    /* Handle collapsed state */
+    .container[data-collapsed="true"] {
+        min-width: 0;
+        width: var(--sidebar-width-icon);
+
+        h2 span:not(.logo) {
+            opacity: 0;
+            transition-delay: 0ms; /* No delay when hiding */
+        }
+
+        .label {
+            opacity: 0;
+            transition-delay: 0ms; /* No delay when hiding */
+        }
+
+        .collapseButton svg {
+            transform: rotate(180deg);
+        }
+    }
 }
 
 /* Dummb selector to handle reduced contrast, shall be improved */
 @media (prefers-reduced-motion: reduce) {
-  .container,
-  .container * {
-    transition: none !important;
-  }
+    .container,
+    .container * {
+        transition: none !important;
+    }
 }

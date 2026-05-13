@@ -1,0 +1,52 @@
+.button {
+    --btn-padding: var(--spacing-3) var(--spacing-5);
+    --btn-font-size: var(--text-sm);
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-2);
+    padding: var(--btn-padding);
+    border: none;
+    border-radius: var(--radius-xl);
+    background-color: var(--color-primary);
+    color: var(--color-on-dark);
+    font-family: var(--font-sans);
+    font-size: var(--btn-font-size);
+    font-weight: var(--font-weight-bold);
+    line-height: 1;
+    cursor: pointer;
+    transition:
+        background-color 150ms ease,
+        opacity 150ms ease;
+}
+
+.button:hover:not(:disabled) {
+    background-color: var(--color-primary-90);
+}
+
+.button:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 3px;
+}
+
+.button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.button[data-size="sm"] {
+    --btn-padding: var(--spacing) var(--spacing);
+    --btn-font-size: var(--text-xs);
+}
+
+.button[data-variant="outline"] {
+    background-color: transparent;
+    color: var(--color-foreground);
+    border: 1px solid var(--color-muted);
+}
+
+.button[data-variant="outline"]:hover:not(:disabled) {
+    background-color: transparent;
+    color: var(--color-muted);
+}

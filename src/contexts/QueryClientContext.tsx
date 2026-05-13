@@ -34,46 +34,6 @@ interface Props {
     children: React.ReactNode;
 }
 
-let isPopulating = false;
-
-// TODO Intentionally runs in production: no CSV import yet (BAB-11), so mock data is the only
-// way to seed the DB. Once CSV import is live, this moves to dev-only.
-async function populateDb() {
-    if (isPopulating) {
-        console.log("Already populating, skipping");
-        return;
-    }
-
-    isPopulating = true;
-
-    try {
-        const existing = await getOrm()
-            .select()
-            .from(transactionsTable)
-            .limit(1);
-
-        if (existing.length > 0) {
-            console.log("Transactions DB already created / skip populating");
-            return;
-        }
-
-        console.log("Populating database with mock data...");
-        await bulkInsert(
-            transactionsTable,
-            mockTransactions.map(
-                ({ date, description, categoryId, amount }) => ({
-                    date: formatToIsoString(date),
-                    description,
-                    categoryId,
-                    amount,
-                }),
-            ),
-        );
-    } finally {
-        isPopulating = false;
-    }
-}
-
 export function QueryClientProvider({ children }: Props) {
     const [invalidations, setInvalidations] = useState<Invalidations>({});
     const [orm, setOrm] = useState<OrmInstance>(() => {
@@ -102,8 +62,6 @@ export function QueryClientProvider({ children }: Props) {
                     await initORM(db);
                     setOrm(getOrm());
                 }
-                // TODO Remove DB populating from dataset when CSV import is ready
-                await populateDb();
             } catch (err) {
                 console.error("Error initialising database ", err);
                 setErrorDb(err as Error);

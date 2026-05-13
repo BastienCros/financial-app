@@ -60,7 +60,11 @@ export async function bulkInsert<T extends Record<string, unknown>>(
         throw new Error("ORM not initialised — call initORM first");
     if (!_db.batchExec) throw new Error("Database not initialised");
 
-    const { sql } = _orm.insert(table).values(rows[0]).toSQL();
+    const { sql } = _orm
+        .insert(table)
+        .values(rows[0])
+        .onConflictDoNothing()
+        .toSQL();
     const paramSets = rows.map(
         (row) => _orm!.insert(table).values(row).toSQL().params as any[],
     );

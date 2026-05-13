@@ -274,7 +274,7 @@ describe("bulkInsert utility", () => {
         expect(rows).toHaveLength(0);
     });
 
-    it("throws on UNIQUE constraint violation and leaves prior data intact", async () => {
+    it("silently skips duplicate rows and leaves prior data intact", async () => {
         const row = {
             date: "2025-01-15",
             description: "Coffee",
@@ -282,7 +282,7 @@ describe("bulkInsert utility", () => {
             amount: -5.5,
         };
         await bulkInsert(transactions, [row]);
-        await expect(bulkInsert(transactions, [row])).rejects.toThrow();
+        await bulkInsert(transactions, [row]);
         const rows = await getOrm().select().from(transactions);
         console.log("[bulkInsert:unique] rows:", rows);
         expect(rows).toHaveLength(1);

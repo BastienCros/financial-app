@@ -16,10 +16,15 @@
         "drizzle:studio": "drizzle-kit studio"
     },
     "dependencies": {
+        "@radix-ui/react-dialog": "^1.1.15",
         "@sqlite.org/sqlite-wasm": "3.51.1-build2",
+        "@types/papaparse": "^5.5.2",
+        "any-date-parser": "^2.2.3",
         "drizzle-orm": "^0.45.2",
+        "lodash": "^4.18.1",
         "lucide-react": "^0.555.0",
         "next": "16.2.4",
+        "papaparse": "^5.5.3",
         "react": "19.2.5",
         "react-dom": "19.2.5"
     },
@@ -27,6 +32,7 @@
         "@tailwindcss/postcss": "^4",
         "@testing-library/dom": "^10.4.1",
         "@testing-library/react": "^16.3.2",
+        "@types/lodash": "^4.17.24",
         "@types/node": "^20",
         "@types/react": "^19",
         "@types/react-dom": "^19",

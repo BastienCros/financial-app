@@ -1,32 +1,33 @@
 .grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  width: 100%;
-  gap: var(--spacing-5);
+    display: grid;
+    grid-template-columns: 1fr;
+    width: 100%;
+    gap: var(--spacing-4);
 }
 
 @media (min-width: 80rem) {
-  .grid {
-    grid-template-columns: 1fr 1fr;
-    grid-template-areas:
-      "pots budget"
-      "transactions budget"
-      "transactions bills";
-  }
+    .grid {
+        max-height: 100vh;
+        grid-template-columns: 1fr 1fr;
+        grid-template-areas:
+            "pots budget"
+            "transactions budget"
+            "transactions bills";
+    }
 
-  .pots {
-    grid-area: pots;
-  }
+    .pots {
+        grid-area: pots;
+    }
 
-  .transactions {
-    grid-area: transactions;
-  }
+    .transactions {
+        grid-area: transactions;
+    }
 
-  .budget {
-    grid-area: budget;
-  }
+    .budget {
+        grid-area: budget;
+    }
 
-  .bills {
-    grid-area: bills;
-  }
+    .bills {
+        grid-area: bills;
+    }
 }

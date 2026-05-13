@@ -143,7 +143,7 @@ export function useMonthStats(month: string | null) {
  */
 export function useAddTransactions() {
     const insertFn = useCallback(
-        (data: Transaction[]) =>
+        (data: Omit<Transaction, "id">[]) =>
             bulkInsert(
                 transactions,
                 data.map(({ date, description, categoryId, amount }) => ({
@@ -156,5 +156,5 @@ export function useAddTransactions() {
         [],
     );
 
-    return useMutation<Transaction>(KEY, insertFn);
+    return useMutation<Omit<Transaction, "id">>(KEY, insertFn);
 }
