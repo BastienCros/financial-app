@@ -1,19 +1,22 @@
 .wrapper {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-2);
+    gap: var(--spacing);
 }
 
 .input {
-    border: 1px solid var(--color-fg-subtle);
-    border-radius: var(--radius-xl);
-    padding: var(--spacing-3) var(--spacing-4);
+    border: 1px solid var(--color-muted-50);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-2) var(--spacing-4);
     font-family: var(--font-sans);
     font-size: var(--text-sm);
-    width: 100%;
     background: var(--color-surface);
     color: var(--color-fg);
     transition: border-color 150ms ease;
+}
+
+input::placeholder {
+    font-weight: var(--font-weight-medium);
 }
 
 .input:focus-visible {

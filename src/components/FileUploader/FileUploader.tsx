@@ -1,3 +1,4 @@
+"use client";
 import React, { useRef, useState } from "react";
 import { DownloadIcon, TrashIcon } from "lucide-react";
 import { cx, humanFileSize } from "@/utils";
@@ -26,7 +27,7 @@ const DisplayFile = ({ file }: { file: File }) => {
     );
 };
 
-export function FileUploader({
+function FileUploader({
     id,
     label = "Drag & Drop or Click to Upload",
     onFileDrop,
@@ -129,3 +130,5 @@ export function FileUploader({
         </div>
     );
 }
+
+export default FileUploader;

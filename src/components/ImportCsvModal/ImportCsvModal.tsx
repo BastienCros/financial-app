@@ -4,7 +4,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { cx } from "@/utils";
 import Button from "@/components/Button";
 import Spinner from "@/components/Spinner";
-import { FileUploader } from "@/components/Field";
+import FileUploader from "@/components/FileUploader";
 
 import { useImportTransaction } from "@/hooks";
 import type { ImportStatus } from "@/lib/csv";

@@ -7,9 +7,10 @@ import SkipNavLink from "@/components/SkipNavLink";
 // import ImportCsvModal from "@/components/ImportCsvModal";
 import NavigationItem from "./NavigationItem";
 import NavActionItem from "./NavActionItem";
-import { NAV_ITEMS } from "./MainNavigation.constants";
+import { NAV_ITEMS, SECOND_NAV_ITEMS } from "./MainNavigation.constants";
 
 import styles from "./MainNavigation.module.css";
+import { NavItem } from "./MainNavigation.types";
 
 // TODO MainNavigation collapsed state is currently stored in memory, if needed for many page later consider creating a context
 // TODO add "got to main content" hidden link
@@ -19,6 +20,40 @@ function MainNavigation() {
     const [isCollapsed, setIsCollapsed] = useState(false);
     // TODO  BAB-48 Re-enable Import CSV action when context moved to Zustand store
     // const [csvModalOpen, setCsvModalOpen] = useState(false);
+
+    const renderItem = (item: NavItem) => {
+        const isAction = "action" in item;
+
+        if (isAction) {
+            console.log("id", item.id);
+            return (
+                <li key={item.id}>
+                    <NavActionItem
+                        renderIcon={item.renderIcon}
+                        label={item.label}
+                        disabled={true}
+                        onClick={item.action}
+                    />
+                </li>
+            );
+        } else {
+            const Icon = item.icon;
+
+            return (
+                <li key={item.id}>
+                    <NavigationItem
+                        isActive={pathname === item.href}
+                        href={item.href}
+                        color={item.color}
+                        disabled={item.disabled}
+                    >
+                        <Icon className={styles.icon} />
+                        <span className={styles.label}>{item.label}</span>
+                    </NavigationItem>
+                </li>
+            );
+        }
+    };
 
     return (
         <nav
@@ -34,33 +69,10 @@ function MainNavigation() {
             <SkipNavLink />
             <ul className={styles.list}>
                 {/* Main navigation item */}
-                {NAV_ITEMS.map((item) => {
-                    const Icon = item.icon;
-                    return (
-                        <li key={item.href}>
-                            <NavigationItem
-                                isActive={pathname === item.href}
-                                href={item.href}
-                                color={item.color}
-                                disabled={item.disabled}
-                            >
-                                <Icon className={styles.icon} />
-                                <span className={styles.label}>
-                                    {item.label}
-                                </span>
-                            </NavigationItem>
-                        </li>
-                    );
-                })}
+                {NAV_ITEMS.map((item) => renderItem(item))}
                 <hr className="mx-10 my-5 h-[3px] bg-background rounded-full border-none" />
                 {/* Secondary navigation item */}
-                <NavActionItem
-                    renderIcon={(c) => <Import className={c} />}
-                    label="Import CSV"
-                    // TODO  BAB-48 Re-enable Import CSV action when context moved to Zustand store
-                    disabled={true}
-                    // onClick={() => setCsvModalOpen(true)}
-                />
+                {SECOND_NAV_ITEMS.map((item) => renderItem(item))}
             </ul>
             {/* TODO  BAB-48 Re-enable Import CSV action when context moved to Zustand store*/}
             {/*<ImportCsvModal
