@@ -21,8 +21,6 @@ const useImportTransaction = () => {
             result: ParseResult<Record<string, string>>,
         ) => {
             try {
-                console.log("Papa Parse - result", result);
-
                 // TODO decide how to handle invalide format: reject invalid row or whole csv ?
                 // Current decision: filter out row that generated error with parsing
                 if (result.errors.length !== 0) {
