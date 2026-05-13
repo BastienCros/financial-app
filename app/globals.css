@@ -16,6 +16,7 @@
     --error: #c94736;
     --muted: var(--navy);
     --muted-25: color-mix(in srgb, var(--muted) 25%, white); /* pressed */
+    --muted-50: color-mix(in srgb, var(--muted) 50%, white); /* pressed */
 
     /* Semantic primary */
     --primary: var(--green);
@@ -37,6 +38,8 @@
     --color-success: var(--success);
     --color-error: var(--error);
     --color-muted: var(--muted);
+    --color-muted-25: var(--muted-25);
+    --color-muted-50: var(--muted-50);
     --color-primary: var(--primary);
     --color-primary-90: var(--primary-90);
     --color-primary-75: var(--primary-75);
@@ -72,6 +75,11 @@
     h1 {
         font-size: var(--text-3xl);
         font-weight: var(--font-weight-extrabold);
+        line-height: var(--tw-leading);
+    }
+    h2 {
+        font-size: var(--text-xl);
+        font-weight: var(--font-weight-bold);
         line-height: var(--tw-leading);
     }
 }
