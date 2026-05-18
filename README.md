@@ -64,7 +64,7 @@ This project started from a Frontend Mentor design challenge and is extending in
 - **UI**: React 19, TypeScript, Tailwind CSS 4
 - **Database**: SQLite WASM with OPFS (Origin Private File System)
 - **Icons**: Lucide React
-- **State Management**: React Query pattern with custom hooks
+- **State Management**: Zustand
 - **Features**: Server Components, CSS Modules, Web Workers
 
 ## Technical Implementation
@@ -105,7 +105,7 @@ financial-app/
 │   │
 │   └── config/            # Config files
 │   │
-│   └── contexts/           # React Context providers
+│   └── store/              # Zustand store (db state, invalidations)
 │   │
 │   └── hooks/              # Reusable custom React hooks
 │   │

@@ -65,8 +65,8 @@ export default defineConfig({
                 replacement: path.resolve(process.cwd(), "src/components"),
             },
             {
-                find: "@/contexts",
-                replacement: path.resolve(process.cwd(), "src/contexts"),
+                find: "@/store",
+                replacement: path.resolve(process.cwd(), "src/store"),
             },
             {
                 find: "@/hooks",

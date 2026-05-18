@@ -1,9 +1,7 @@
 import { vi, describe, it, expect, beforeAll, beforeEach } from "vitest";
 import { renderHook, waitFor, act } from "@testing-library/react";
-import React from "react";
 import type { Transaction } from "@/types";
 import { formatToIsoString } from "@/helpers";
-import { QueryClientProvider } from "@/contexts/QueryClientContext";
 import {
     useTransactionsGetSortedByDate,
     useAddTransactions,
@@ -16,9 +14,6 @@ import { getDb, getOrmObject } from "../setup";
 
 // Prevent populateDb from seeding mock data — each test manages its own fixtures
 vi.mock("@/data", () => ({ mockTransactions: [] }));
-
-const wrapper = ({ children }: { children: React.ReactNode }) =>
-    React.createElement(QueryClientProvider, null, children);
 
 const tx1: Omit<Transaction, "id"> = {
     date: "2025-01-15",
@@ -65,9 +60,7 @@ beforeEach(async () => {
 
 describe("query behavior", () => {
     it("empty db returns []", async () => {
-        const { result } = renderHook(() => useTransactionsGetSortedByDate(), {
-            wrapper,
-        });
+        const { result } = renderHook(() => useTransactionsGetSortedByDate());
         await waitFor(() => expect(result.current.data).toEqual([]));
         expect(result.current.loading).toBe(false);
         expect(result.current.error).toBe("");
@@ -77,9 +70,7 @@ describe("query behavior", () => {
         const db = await getDb();
         await db.batchExec?.(INSERT_SQL, [txParams(tx1), txParams(tx3)]);
 
-        const { result } = renderHook(() => useMonthTransactions("2025-01"), {
-            wrapper,
-        });
+        const { result } = renderHook(() => useMonthTransactions("2025-01"));
         await waitFor(() => expect(result.current.data).toHaveLength(1));
         expect(result.current.data![0].description).toBe("Coffee");
     });
@@ -90,7 +81,7 @@ describe("query behavior", () => {
 
         const { result, rerender } = renderHook(
             ({ month }: { month: string }) => useMonthTransactions(month),
-            { wrapper, initialProps: { month: "2025-01" } },
+            { initialProps: { month: "2025-01" } },
         );
         await waitFor(() =>
             expect(result.current.data![0]?.description).toBe("Coffee"),
@@ -111,7 +102,6 @@ describe("query behavior", () => {
                 useQuery("transactions", async (_orm) => {
                     throw new Error("simulated");
                 }),
-            { wrapper },
         );
         await waitFor(() => expect(result.current.error).not.toBe(""));
         expect(result.current.loading).toBe(false);
@@ -124,9 +114,7 @@ describe("query behavior", () => {
             ["2025-01-20", "Expense", "food", -200],
         ]);
 
-        const { result } = renderHook(() => useMonthStats("2025-01"), {
-            wrapper,
-        });
+        const { result } = renderHook(() => useMonthStats("2025-01"));
         await waitFor(() => {
             expect(result.current.loading).toBe(false);
             expect(result.current.balance).toBe(300);
@@ -142,7 +130,7 @@ describe("query behavior", () => {
 
 describe("useAvailableMonths", () => {
     it("returns [] when no transactions exist", async () => {
-        const { result } = renderHook(() => useAvailableMonths(), { wrapper });
+        const { result } = renderHook(() => useAvailableMonths());
         await waitFor(() => {
             expect(result.current.loading).toBe(false);
             expect(result.current.months).toEqual([]);
@@ -158,7 +146,7 @@ describe("useAvailableMonths", () => {
             txParams(tx2),
             txParams(tx3),
         ]);
-        const { result } = renderHook(() => useAvailableMonths(), { wrapper });
+        const { result } = renderHook(() => useAvailableMonths());
         await waitFor(() =>
             expect(result.current.months).toEqual(["2025-02", "2025-01"]),
         );
@@ -172,7 +160,7 @@ describe("useAvailableMonths", () => {
             txParams(tx2),
             txParams(tx3),
         ]);
-        const { result } = renderHook(() => useAvailableMonths(1), { wrapper });
+        const { result } = renderHook(() => useAvailableMonths(1));
         await waitFor(() => {
             expect(result.current.months).toHaveLength(1);
             expect(result.current.months[0]).toBe("2025-02");
@@ -192,7 +180,6 @@ describe("mutation → query cycle", () => {
                 list: useTransactionsGetSortedByDate(),
                 add: useAddTransactions(),
             }),
-            { wrapper },
         );
         await waitFor(() => expect(result.current.list.data).toEqual([]));
 
@@ -211,7 +198,6 @@ describe("mutation → query cycle", () => {
                 list2: useTransactionsGetSortedByDate(),
                 add: useAddTransactions(),
             }),
-            { wrapper },
         );
         await waitFor(() => expect(result.current.list1.data).toEqual([]));
 
@@ -231,7 +217,6 @@ describe("mutation → query cycle", () => {
                 list: useTransactionsGetSortedByDate(),
                 add: useAddTransactions(),
             }),
-            { wrapper },
         );
         await waitFor(() => expect(result.current.list.data).toEqual([]));
 
@@ -264,7 +249,6 @@ describe("error and atomicity", () => {
                     list: useTransactionsGetSortedByDate(),
                     add: useAddTransactions(),
                 }),
-                { wrapper },
             );
             await waitFor(() =>
                 expect(result.current.list.data).toHaveLength(1),
@@ -298,7 +282,6 @@ describe("error and atomicity", () => {
                 list: useTransactionsGetSortedByDate(),
                 add: useAddTransactions(),
             }),
-            { wrapper },
         );
         await waitFor(() => expect(result.current.list.data).toEqual([]));
 
@@ -333,11 +316,9 @@ describe("concurrency and robustness", () => {
 
         const { result: r1 } = renderHook(
             () => useMonthTransactions("2025-01"),
-            { wrapper },
         );
         const { result: r2 } = renderHook(
             () => useMonthTransactions("2025-02"),
-            { wrapper },
         );
 
         await waitFor(() => {
@@ -351,15 +332,9 @@ describe("concurrency and robustness", () => {
     it("two simultaneous mutations both commit", async () => {
         const { result: r1 } = renderHook(
             () => ({ add: useAddTransactions() }),
-            {
-                wrapper,
-            },
         );
         const { result: r2 } = renderHook(
             () => ({ add: useAddTransactions() }),
-            {
-                wrapper,
-            },
         );
 
         await act(async () => {
@@ -392,7 +367,6 @@ describe("concurrency and robustness", () => {
                 list: useTransactionsGetSortedByDate(),
                 add: useAddTransactions(),
             }),
-            { wrapper },
         );
         await waitFor(() => expect(result.current.list.data).toEqual([]));
 
@@ -411,7 +385,7 @@ describe("concurrency and robustness", () => {
 
         const { result, rerender } = renderHook(
             ({ month }: { month: string }) => useMonthTransactions(month),
-            { wrapper, initialProps: { month: "2025-01" } },
+            { initialProps: { month: "2025-01" } },
         );
 
         // Change args immediately without waiting for initial fetch to complete

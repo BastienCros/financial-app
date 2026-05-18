@@ -108,7 +108,7 @@ export function useMonthStats(month: string | null) {
             if (!month) return undefined;
             const { start, end } = getMonthBounds(month);
 
-            return (
+            const result = (
                 await orm
                     .select({
                         balance: sql<number>`SUM(${transactions.amount})`,
@@ -118,6 +118,8 @@ export function useMonthStats(month: string | null) {
                     .from(transactions)
                     .where(isWithinMonth(transactions.date, start, end))
             )[0];
+
+            return result;
         },
         [month],
     );
