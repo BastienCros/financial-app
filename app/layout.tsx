@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { cx } from "@/utils";
-import MainNavigation, { MainNavigationWrapper } from "@/src/components/MainNavigation";
+import {MainNavigation, MobileNavigation, MainNavigationWrapper } from "@/src/components/MainNavigation";
 import "./globals.css";
 import { SkipNavContent } from "@/components/SkipNavLink";
 
@@ -34,6 +34,7 @@ export default function RootLayout({
           <MainNavigation />
           <SkipNavContent />
           {children}
+          <MobileNavigation/>
         </MainNavigationWrapper>
       </body>
     </html>

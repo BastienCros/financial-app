@@ -1,0 +1,111 @@
+/* Shared by NavigationItem and NavActionItem, and reused by both
+   MainNavigation (desktop sidebar) and MobileNavigation (mobile tab bar)
+   so item/icon/label styling has a single source of truth instead of
+   being duplicated per parent.
+
+   Data attributes this file reacts to (set by ancestors, not owned here):
+   - [data-nav-collapsed="true"] - set by MainNavigation.tsx on the
+     desktop sidebar's <nav> when its collapse button is toggled.
+     MobileNavigation never sets it, so the rule below is inert there. */
+
+/* ------------------------------------------
+ SHARED ELEMENTS: Icons & Labels
+ ------------------------------------------ */
+.icon {
+    width: 24px; /* Fixed size */
+    height: 24px;
+    flex-shrink: 0; /* Prevent shrinking */
+}
+
+.label {
+    display: none;
+    transition: opacity;
+    transition-duration: 500ms;
+    transition-delay: 100ms;
+    overflow: hidden;
+    text-overflow: clip;
+    white-space: nowrap;
+}
+
+@media (width >= 48rem) {
+    .label {
+        display: block;
+    }
+}
+
+/* ------------------------------------------
+ NAVIGATION ITEM: Links & States (mobile-first)
+ ------------------------------------------ */
+.item {
+    --item-color: green;
+
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: calc(1 * var(--spacing));
+    margin-top: calc(1 * var(--spacing));
+    padding-block: calc(2 * var(--spacing));
+    padding-inline: calc(3 * var(--spacing));
+    font-size: var(--text-mg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-background);
+    opacity: 0.8;
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+}
+
+.item[aria-current="page"] {
+    pointer-events: none; /* Avoid clicking on current page */
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    opacity: 1;
+
+    & svg {
+        color: var(--item-color);
+    }
+
+    &::before {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        content: "";
+        height: 4px;
+        background-color: var(--item-color);
+    }
+}
+
+.item:hover {
+    opacity: 1;
+}
+
+.item[aria-disabled="true"] {
+    pointer-events: none;
+    cursor: default;
+    opacity: 0.5;
+}
+
+@media (width >= 64rem /* 1024px */) {
+    .item {
+        flex-direction: row;
+        gap: calc(8 * var(--spacing));
+        margin-top: 0;
+        margin-inline-end: calc(2 * var(--spacing));
+        padding-block: calc(3 * var(--spacing));
+        padding-inline: calc(7 * var(--spacing)) 0;
+        border-radius: 0 var(--radius-2xl) var(--radius-2xl) 0;
+    }
+
+    .item[aria-current="page"]::before {
+        top: 0;
+        bottom: 0;
+        right: auto;
+        width: 4px;
+        height: auto;
+    }
+
+    [data-nav-collapsed="true"] .label {
+        opacity: 0;
+        transition-delay: 0ms; /* No delay when hiding */
+    }
+}
