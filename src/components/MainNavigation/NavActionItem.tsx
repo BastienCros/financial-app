@@ -1,5 +1,5 @@
 import { cx } from "@/utils";
-import styles from "./MainNavigation.module.css";
+import itemStyles from "./NavigationItem.module.css";
 
 interface NavActionItemProps {
     renderIcon: (className: string) => React.ReactNode;
@@ -17,14 +17,14 @@ function NavActionItem({
     return (
         <li>
             <button
-                className={cx(styles.item, "w-full cursor-pointer")}
+                className={cx(itemStyles.item, "w-full cursor-pointer")}
                 onClick={onClick}
                 type="button"
                 disabled={disabled}
                 aria-disabled={disabled}
             >
-                {renderIcon(styles.icon)}
-                <span className={styles.label}>{label}</span>
+                {renderIcon(itemStyles.icon)}
+                <span className={cx(itemStyles.label, "animate-fadein")}>{label}</span>
             </button>
         </li>
     );

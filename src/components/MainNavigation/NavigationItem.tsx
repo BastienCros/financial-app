@@ -1,13 +1,16 @@
 import Link from "next/link";
-import styles from "./MainNavigation.module.css";
 import { CSSProperties } from "react";
+import { cx } from "@/utils";
+
+import styles from "./NavigationItem.module.css";
 
 interface NavigationItemProps {
     isActive?: boolean;
     disabled?: boolean;
     href: string;
     color?: string;
-    children: React.ReactNode;
+    renderIcon: (className: string) => React.ReactNode;
+    label: string;
 }
 
 function NavigationItem({
@@ -15,7 +18,8 @@ function NavigationItem({
     disabled,
     href,
     color,
-    children
+    renderIcon,
+    label
 }: NavigationItemProps) {
     const style = {"--item-color": color};
 
@@ -29,7 +33,8 @@ function NavigationItem({
             className={styles.item}
             style={style as CSSProperties}
         >
-            {children}
+            {renderIcon(styles.icon)}
+            <span className={cx(styles.label, "animate-fadein")}>{label}</span>
         </Link>
     )
 }

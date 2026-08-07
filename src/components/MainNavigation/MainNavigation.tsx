@@ -10,6 +10,7 @@ import NavActionItem from "./NavActionItem";
 import { NAV_ITEMS } from "./MainNavigation.constants";
 
 import styles from "./MainNavigation.module.css";
+import itemStyles from "./NavigationItem.module.css";
 
 // TODO MainNavigation collapsed state is currently stored in memory, if needed for many page later consider creating a context
 // TODO add "got to main content" hidden link
@@ -24,7 +25,7 @@ function MainNavigation() {
         <nav
             className={styles.container}
             aria-label="main navigation"
-            data-collapsed={isCollapsed}
+            data-nav-collapsed={isCollapsed}
         >
             <h2 className="pt-7 pl-7 text-2xl font-extrabold font-mono">
                 <span className={styles.logo}>F</span>
@@ -43,12 +44,9 @@ function MainNavigation() {
                                 href={item.href}
                                 color={item.color}
                                 disabled={item.disabled}
-                            >
-                                <Icon className={styles.icon} />
-                                <span className={styles.label}>
-                                    {item.label}
-                                </span>
-                            </NavigationItem>
+                                renderIcon={(c) => <Icon className={c} />}
+                                label={item.label}
+                            />
                         </li>
                     );
                 })}
@@ -73,8 +71,8 @@ function MainNavigation() {
                 aria-label={isCollapsed ? "Expand menu" : "Minimize menu"}
                 aria-expanded={!isCollapsed}
             >
-                <ArrowBigLeftDash className={styles.icon} />{" "}
-                <span className={styles.label}>Minimize Menu</span>
+                <ArrowBigLeftDash className={itemStyles.icon} />{" "}
+                <span className={itemStyles.label}>Minimize Menu</span>
             </button>
         </nav>
     );

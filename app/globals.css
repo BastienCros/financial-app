@@ -61,9 +61,23 @@
 
     /* Animation  */
     --animate-spin: spin 1250ms linear infinite;
+    --animate-fadein: fadeIn 200ms ease-in-out;
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
 }
 
 @layer base {
+    html {
+        scrollbar-gutter: stable;
+    }
+
     body {
         background: var(--color-background);
         color: var(--color-foreground);
