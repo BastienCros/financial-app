@@ -27,4 +27,5 @@ export function Button({
     );
 }
 
-export default Button;
+export {Button as default};
+export const buttonStyles = styles.button;
