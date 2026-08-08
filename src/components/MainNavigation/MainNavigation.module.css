@@ -37,6 +37,7 @@
     .list {
         display: flex;
         flex-direction: column;
+        gap: calc(1 * var(--spacing));
         padding-block: calc(20 * var(--spacing));
     }
 

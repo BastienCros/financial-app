@@ -45,13 +45,34 @@
     align-items: center;
     gap: calc(1 * var(--spacing));
     margin-top: calc(1 * var(--spacing));
-    padding-block: calc(2 * var(--spacing));
-    padding-inline: calc(3 * var(--spacing));
+    padding: calc(2 * var(--spacing)) calc(3 * var(--spacing));
     font-size: var(--text-mg);
     font-weight: var(--font-weight-semibold);
     color: var(--color-background);
+    background: transparent;
     opacity: 0.8;
     border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+
+    transition: background 200ms;
+
+    &::before {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        content: "";
+        height: 4px;
+        transition: background 200ms;
+    }
+}
+
+.item:hover {
+    background: hsl(252deg 7% 21%);
+
+    &::before {
+        background: var(--item-color);
+        transform: scaleY(1);
+    }
 }
 
 .item[aria-current="page"] {
@@ -65,12 +86,6 @@
     }
 
     &::before {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        content: "";
-        height: 4px;
         background-color: var(--item-color);
     }
 }
@@ -91,17 +106,17 @@
         gap: calc(8 * var(--spacing));
         margin-top: 0;
         margin-inline-end: calc(2 * var(--spacing));
-        padding-block: calc(3 * var(--spacing));
-        padding-inline: calc(7 * var(--spacing)) 0;
+        padding: calc(3 * var(--spacing)) calc(7 * var(--spacing));
         border-radius: 0 var(--radius-2xl) var(--radius-2xl) 0;
-    }
 
-    .item[aria-current="page"]::before {
-        top: 0;
-        bottom: 0;
-        right: auto;
-        width: 4px;
-        height: auto;
+        &::before {
+            /* Move line to left */
+            top: 0;
+            bottom: 0;
+            right: auto;
+            width: 4px;
+            height: auto;
+        }
     }
 
     [data-nav-collapsed="true"] .label {
